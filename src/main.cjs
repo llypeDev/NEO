@@ -22,14 +22,16 @@ let store,settings,readings={},settingsWindow,panelWindow,tray,timer,quitting=fa
 const alertsSeen={},errorCounts={};
 const accountRevisions={};
 const uiURL=pathToFileURL(path.join(__dirname,'ui','index.html')).href;
+const registryView=registry.map(p=>({...p,sourceUrl:`https://github.com/qunqin24/Pulse/blob/73e210f10fc98b5e097fd0ee8c021f9965327ebe/${p.source||''}`}));
+const providerCount=registry.filter(p=>p.id!=='extension').length;
 function snapshot(){
   const display=screen.getAllDisplays().find(d=>d.id===Number(settings.displayId))||screen.getPrimaryDisplay();
-  return {version:app.getVersion(),settings,readings,panelLayout:panelLayout(settings,display.workArea),registry:registry.map(p=>({...p,sourceUrl:`https://github.com/qunqin24/Pulse/blob/73e210f10fc98b5e097fd0ee8c021f9965327ebe/${p.source||''}`})),refreshing,demo:demoMode,ledger,
+  return {version:app.getVersion(),settings,readings,panelLayout:panelLayout(settings,display.workArea),registry:registryView,refreshing,demo:demoMode,ledger,
     credentials:Object.fromEntries(settings.accounts.map(a=>[a.id,store.hasCredential(a.id)])),
     displays:screen.getAllDisplays().map(d=>({id:d.id,label:d.label||`Monitor ${d.id}`,width:d.workArea.width,height:d.workArea.height})),
     dark:settings.theme==='system'?nativeTheme.shouldUseDarkColors:settings.theme==='dark'};
 }
-function broadcast(){for(const win of [settingsWindow,panelWindow])if(win&&!win.isDestroyed())win.webContents.send('state',snapshot());updateTray();}
+function broadcast(){const windows=[settingsWindow,panelWindow].filter(win=>win&&!win.isDestroyed());if(windows.length){const state=snapshot();for(const win of windows)win.webContents.send('state',state);}updateTray();}
 function harden(win){
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
   win.webContents.on('will-navigate',(e,url)=>{if(url.split('?')[0]!==uiURL)e.preventDefault();});
@@ -218,7 +220,7 @@ async function smokeTest(){
   fs.writeFileSync(path.join(output,'dashboard.png'),(await settingsWindow.webContents.capturePage()).toPNG());
   await settingsWindow.webContents.executeJavaScript("document.querySelector('[data-view=providers]').click()");
   await new Promise(r=>setTimeout(r,400));
-  await check("document.querySelectorAll('.provider-tile').length === 77",'77 provider tiles');
+  await check(`document.querySelectorAll('.provider-tile').length === ${providerCount}`,`${providerCount} provider tiles`);
   fs.writeFileSync(path.join(output,'providers.png'),(await settingsWindow.webContents.capturePage()).toPNG());
   await settingsWindow.webContents.executeJavaScript("document.querySelector('[data-provider=codex]').click()");
   await new Promise(r=>setTimeout(r,250));
@@ -289,7 +291,7 @@ async function smokeTest(){
   await panelWindow.webContents.executeJavaScript("document.body.style.removeProperty('background')");
   const windows=BrowserWindow.getAllWindows();
   if(windows.some(w=>{const p=w.webContents.getLastWebPreferences();return !p.sandbox||!p.contextIsolation||p.nodeIntegration;}))failures.push('renderer sandbox');
-  write(path.join(output,'smoke-result.json'),{passed:failures.length===0,failures,providers:77,checks:24,windows:windows.length,version:app.getVersion(),electron:process.versions.electron,credentialEncryption:safeStorage.isEncryptionAvailable()});
+  write(path.join(output,'smoke-result.json'),{passed:failures.length===0,failures,providers:providerCount,checks:24,windows:windows.length,version:app.getVersion(),electron:process.versions.electron,credentialEncryption:safeStorage.isEncryptionAvailable()});
   app.exit(failures.length?1:0);
 }
 if(process.argv.includes('--json')){
@@ -308,7 +310,8 @@ else{
     try{configureShortcuts();}catch{settings.shortcuts={toggle:'',settings:''};}
     updatePanel();openSettings();
     screen.on('display-added',updatePanel);screen.on('display-removed',updatePanel);screen.on('display-metrics-changed',updatePanel);nativeTheme.on('updated',broadcast);
-    powerMonitor.on('resume',()=>refresh());
+    // Give the network a moment to return after sleep before reading the services.
+    powerMonitor.on('resume',()=>setTimeout(()=>refresh(),5000));
     if(smoke)smokeTest().catch(e=>{fs.writeFileSync(path.join(app.getPath('userData'),'smoke-error.txt'),e.stack);app.exit(1);});else refresh();
   });
 }

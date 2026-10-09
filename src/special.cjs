@@ -2,6 +2,7 @@
 const fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os');
 const {spawn,execFile}=require('node:child_process');
 const crypto=require('node:crypto');
+const {version}=require('../package.json');
 const specialIds=new Set(['kiro','antigravity','ollamaCloud','volcengine','alibabaCodingPlan','alibabaTokenPlan','qwenCloud','notionAI','ibmBob','xaiAPI','windsurf','sakana','replicate','typeSafe','jetBrainsAI','devin','zoomMate']);
 function fail(message){throw new Error(message);}
 function required(text){if(!text?.trim())fail('Insira uma credencial para este serviço.');return text.trim().replace(/^Cookie:\s*/i,'');}
@@ -19,7 +20,8 @@ function decodePlanStatus(data){
 function varint(v){const bytes=[];while(v>=128){bytes.push((v%128)|128);v=Math.floor(v/128);}bytes.push(v);return Buffer.from(bytes);}
 function safeEnvironment(){const env={};for(const key of ['PATH','Path','SystemRoot','WINDIR','USERPROFILE','HOME','APPDATA','LOCALAPPDATA','TEMP','TMP','HTTP_PROXY','HTTPS_PROXY','NO_PROXY'])if(process.env[key])env[key]=process.env[key];return env;}
 async function executable(name){
-  const directories=(process.env.PATH||'').split(path.delimiter);
+  // Relative or empty PATH entries would resolve the CLI from the current directory.
+  const directories=(process.env.PATH||'').split(path.delimiter).filter(d=>d&&path.isAbsolute(d));
   directories.push(path.join(os.homedir(),'.local','bin'),path.join(os.homedir(),'.npm-global','bin'));
   for(const dir of directories)for(const extension of process.platform==='win32'?['.exe','.cmd','']:['']){const file=path.join(dir,name+extension);try{const stat=await fs.stat(file);if(stat.isFile())return file;}catch{}}
   fail(`Instale e autentique o CLI ${name}, ou use uma resposta JSON exportada.`);
@@ -43,7 +45,7 @@ async function kiroUsage(){
     child.stderr.on('data',()=>{});child.on('error',()=>finish(new Error('Kiro CLI indisponível.')));child.on('exit',()=>{if(!done)finish(new Error('A conexão com Kiro foi encerrada.'));});
     child.stdin.on('error',()=>finish(new Error('Kiro CLI encerrou a conexão.')));
     child.stdout.on('data',chunk=>{buffer+=chunk.toString();if(buffer.length>1024*1024){finish(new Error('Resposta de Kiro muito grande.'));return;}let at;while((at=buffer.indexOf('\n'))>=0){let message;try{message=JSON.parse(buffer.slice(0,at));}catch{}buffer=buffer.slice(at+1);if(message?.error)finish(new Error('Kiro recusou a consulta.'));else if(message?.id===1)send(2,'_kiro/account/getUsage');else if(message?.id===2)finish(null,message.result);}});
-    send(1,'initialize',{protocolVersion:1,clientCapabilities:{},clientInfo:{name:'Neo',version:'0.3.1'}});
+    send(1,'initialize',{protocolVersion:1,clientCapabilities:{},clientInfo:{name:'Neo',version}});
   });
 }
 async function jetbrainsQuota(){
