@@ -1,7 +1,7 @@
 {
   "name": "neo",
   "productName": "Neo",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Monitor local de cotas de IA para Windows, baseado no Pulse de qunqin24",
   "author": "llypeDev",
   "license": "Apache-2.0",
@@ -9,6 +9,7 @@
   "scripts": {
     "start": "electron .",
     "demo": "electron . --demo",
+    "smoke": "electron . --smoke",
     "test": "node --test test/*.test.cjs",
     "check": "node scripts/check.cjs",
     "build": "electron-builder --win nsis portable --x64",

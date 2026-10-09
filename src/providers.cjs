@@ -4,6 +4,7 @@ const path = require('node:path');
 const os = require('node:os');
 const {parsers, date} = require('./core.cjs');
 const {profileParsers, routes} = require('./profiles.cjs');
+const {version} = require('../package.json');
 Object.assign(parsers, profileParsers);
 class ProviderError extends Error { constructor(code, message) {super(message); this.code = code;} }
 const error = (code, message) => new ProviderError(code, message);
@@ -61,7 +62,7 @@ async function requestJSON(url, options = {}, fetcher = globalThis.fetch) {
   if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname))) throw error('address', 'Use HTTPS; HTTP é permitido apenas no computador local.');
   let response;
   try {
-    response = await fetcher(url, {...requestOptions, redirect: 'error', signal: AbortSignal.timeout(20000), headers: {Accept: 'application/json', 'User-Agent': 'Neo/0.3.1', ...requestOptions.headers}});
+    response = await fetcher(url, {...requestOptions, redirect: 'error', signal: AbortSignal.timeout(20000), headers: {Accept: 'application/json', 'User-Agent': `Neo/${version}`, ...requestOptions.headers}});
   } catch {throw error('network', 'Não foi possível consultar o serviço. Verifique a conexão e tente novamente.');}
   if ([401, 403].includes(response.status)) throw error('auth', 'O serviço recusou o login. Entre novamente ou atualize a credencial.');
   if (response.status === 429) throw error('rate', 'O serviço pediu uma pausa nas consultas.');

@@ -1,6 +1,6 @@
 # Configurar contas no Neo
 
-Este guia acompanha o Neo 0.3.1. Os 77 conectores e suas fontes estão em [PROVEDORES.md](../PROVEDORES.md). O acesso real depende das permissões, do plano e dos endpoints disponíveis no serviço.
+Este guia acompanha o Neo 0.3.2. Os 77 conectores e suas fontes estão em [PROVEDORES.md](../PROVEDORES.md). O acesso real depende das permissões, do plano e dos endpoints disponíveis no serviço.
 
 ## Adicionar ou editar uma conta
 
@@ -36,7 +36,7 @@ Para uma conexão manual, o adaptador aceita um JWT ou o Cookie `WorkosCursorSes
 
 ## GitHub Copilot
 
-Insira um token OAuth GitHub aceito pelo endpoint de cotas do Copilot. Um PAT genérico pode não ser aceito. O Neo 0.3.1 não possui login próprio por código de dispositivo.
+Insira um token OAuth GitHub aceito pelo endpoint de cotas do Copilot. Um PAT genérico pode não ser aceito. O Neo 0.3.2 não possui login próprio por código de dispositivo.
 
 Se houver recusa de acesso, confirme o produto e o tipo de token em uso; adicionar permissões a um PAT não garante compatibilidade com o endpoint interno.
 

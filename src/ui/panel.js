@@ -1,6 +1,6 @@
 'use strict';
 // Retain the same DOM and animate geometry, rather than replacing the panel on hover.
-let neoPanel,neoRail,neoSurface,neoCard,neoContent,neoTail,neoFrame=0,neoSignature='',neoDragging=false,neoPointer=null;
+let neoPanel,neoRail,neoSurface,neoCard,neoContent,neoTail,neoFrame=0,neoSignature='',neoDragging=false,neoPointer=null,neoShapeKey='';
 let neoOpening={value:1,target:1,from:1,start:0},neoCardMotion=null,neoCardVisibility={value:0,target:0,from:0,start:0};
 const neoReduced=matchMedia('(prefers-reduced-motion: reduce)');
 const neoLerp=(a,b,p)=>a+(b-a)*p;
@@ -153,6 +153,8 @@ function updateShape(){
     if(m.vertical)add({left:Math.min(tail.left,rail.left),right:Math.max(tail.right,rail.right),top:tail.top,bottom:tail.bottom});
     else add({left:tail.left,right:tail.right,top:Math.min(tail.top,rail.top),bottom:Math.max(tail.bottom,rail.bottom)});
   }
+  // Every animation frame calls this; only a changed region crosses IPC and reshapes the window.
+  const key=JSON.stringify(rects);if(key===neoShapeKey)return;neoShapeKey=key;
   window.pulse.panelShape(rects);
 }
 function armCollapse(){

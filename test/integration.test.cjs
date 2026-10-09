@@ -47,3 +47,18 @@ test('histórico deduplica contadores e descarta texto das mensagens',async()=>{
   await fs.writeFile(path.join(claude,'test.jsonl'),JSON.stringify({timestamp,type:'assistant',message:{id:'msg1',model:'example-model',content:'private prompt',usage:{input_tokens:20,output_tokens:10,cache_read_input_tokens:5}}}));
   const ledger=await scanHistory({home,env:{}});assert.equal(ledger.records,2);assert.equal(ledger.total,65);assert.ok(!JSON.stringify(ledger).includes('private prompt'));
 });
+test('conta de provedor desconhecido não apaga as demais e o original fica em cópia',async()=>{
+  const dir=await fs.mkdtemp(path.join(temporaryRoot,'pulse-profile-')),file=path.join(dir,'settings.json');
+  await fs.writeFile(file,JSON.stringify({version:3,theme:'light',accounts:[{id:'a',provider:'codex',enabled:true},{id:'b',provider:'removedProvider',enabled:true},{id:'a',provider:'claude'}]}));
+  const settings=new Storage(dir,{}).settings();assert.deepEqual(settings.accounts.map(a=>a.id),['a']);assert.equal(settings.theme,'light');
+  const copies=(await fs.readdir(dir)).filter(f=>f.startsWith('settings.invalid-'));assert.equal(copies.length,1);assert.match(await fs.readFile(path.join(dir,copies[0]),'utf8'),/removedProvider/);
+  new Storage(dir,{}).settings();assert.equal((await fs.readdir(dir)).filter(f=>f.startsWith('settings.invalid-')).length,1);
+  assert.throws(()=>validateSettings({accounts:[{id:'b',provider:'removedProvider'}]}));
+});
+test('perfil e credenciais corrompidos são copiados antes de voltar ao padrão',async()=>{
+  const dir=await fs.mkdtemp(path.join(temporaryRoot,'pulse-damaged-'));await fs.writeFile(path.join(dir,'settings.json'),'{"accounts":[');await fs.writeFile(path.join(dir,'secrets.json'),'[1]');
+  const store=new Storage(dir,{});assert.deepEqual(store.settings().accounts,[]);assert.equal(store.hasCredential('x'),false);
+  const files=await fs.readdir(dir);assert.equal(files.filter(f=>f.startsWith('settings.invalid-')).length,1);assert.equal(files.filter(f=>f.startsWith('secrets.invalid-')).length,1);
+  assert.deepEqual(JSON.parse(await fs.readFile(path.join(dir,'secrets.json'),'utf8')),{});
+});
+test('tema inválido volta ao tema do sistema',()=>{assert.equal(validateSettings({accounts:[],theme:'sepia'}).theme,'system');});
