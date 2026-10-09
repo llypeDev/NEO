@@ -258,7 +258,7 @@ Quando houver uma data real de renovação, use uma string ISO 8601 em `resetsAt
 
 ## Estado atual
 
-O Neo 0.3.1 oferece o catálogo de 77 conectores e os recursos de interface descritos neste README. A validação local inclui **103 testes automatizados** e **24 verificações do executável portátil no Windows**, incluindo sandbox das janelas, catálogo, comunicação, criptografia de credenciais, geometrias e animação. Os testes de provedores usam fixtures e simulações; não comprovam o acesso real aos 77 serviços.
+O Neo 0.3.1 oferece o catálogo de 77 conectores e os recursos de interface descritos neste README. A validação local inclui **106 testes automatizados** e **24 verificações do executável portátil no Windows**, incluindo sandbox das janelas, catálogo, comunicação, criptografia de credenciais, geometrias e animação. Os testes de provedores usam fixtures e simulações; não comprovam o acesso real aos 77 serviços.
 
 Ainda estão pendentes:
 

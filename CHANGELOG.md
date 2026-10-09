@@ -1,5 +1,17 @@
 # Histórico de versões
 
+## Não publicado
+
+- Preservação das contas válidas quando o perfil contém uma conta que esta versão não reconhece; antes, todas eram descartadas e o arquivo era sobrescrito no próximo salvamento.
+- Cópia de `settings.json` ou `secrets.json` danificado para `*.invalid-<data>.json` antes do reparo.
+- Ordem da faixa mantida ao editar uma conta existente.
+- Tema desconhecido volta para o tema do sistema.
+- Faixa reposicionada quando um monitor é reconectado; falha em uma conta não interrompe a atualização das demais.
+- Versão do aplicativo lida do `package.json` e quantidade de conectores derivada do catálogo.
+- Menos trabalho por atualização: estado calculado uma vez por envio e região da faixa enviada só quando muda.
+- CLIs dos provedores não são procurados em entradas relativas do `PATH`; consulta após a suspensão aguarda a rede voltar.
+- Acessibilidade: nomes legíveis em seletores e grupos de opções, foco preso no modal e devolvido ao fechar, busca de provedores sem acentos.
+
 ## 0.3.1 — 2026-10-09
 
 - Aplicação da logo N em fita preta no aplicativo, bandeja, notificações, tela Sobre, instaladores e atalho.
