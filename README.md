@@ -59,15 +59,26 @@ Escolha um arquivo na página de [Releases](https://github.com/llypeDev/NEO/rele
 | [Neo-0.3.2-codigo.zip](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-codigo.zip) | **Desenvolvimento:** código, testes, documentação e imagens; não é o aplicativo pronto. |
 | [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.2/SHA256SUMS.txt) | Conferir a integridade dos arquivos baixados. |
 
-1. Baixe o instalador ou o executável portátil.
+1. Baixe o instalador ou o executável portátil na lista **Assets** da release. O ZIP do botão **Code** do GitHub, assim como o `Neo-0.3.2-codigo.zip`, contém só o código-fonte, sem o aplicativo.
 2. Execute o arquivo. No instalador, escolha a pasta e conclua o assistente.
 3. Abra **Neo** e adicione seu primeiro provedor.
 
-A distribuição inicial não tem assinatura digital. Se o Windows apresentar uma identificação de editor desconhecido, confira a origem do arquivo e seu hash antes de decidir executá-lo. O hash SHA-256 pode ser consultado no PowerShell:
+### Conferir o arquivo baixado
+
+Os executáveis não têm assinatura digital. Se o Windows apresentar uma identificação de editor desconhecido, confira a origem do arquivo e seu hash antes de decidir executá-lo:
+
+1. Abra o PowerShell e entre na pasta em que o arquivo foi salvo, normalmente Downloads.
+2. Confira o nome do arquivo com `Get-ChildItem Neo-*.exe`. Se nada aparecer, o download não está nessa pasta. O navegador pode ter salvo o arquivo em outro lugar ou acrescentado " (1)" ao nome.
+3. Copie o hash do arquivo nas notas da release ou na linha correspondente do [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.2/SHA256SUMS.txt).
+4. Rode o comando abaixo colando o hash entre as aspas. Use o nome que o `Get-ChildItem` mostrou. O resultado deve ser `True`.
 
 ```powershell
-Get-FileHash .\Neo-0.3.2-x64-portable.exe -Algorithm SHA256
+cd $env:USERPROFILE\Downloads
+Get-ChildItem Neo-*.exe
+(Get-FileHash .\Neo-0.3.2-x64-portable.exe -Algorithm SHA256).Hash -eq 'cole-aqui-o-hash'
 ```
+
+Um `False` sem mensagem de erro indica um arquivo diferente do publicado: apague-o e baixe de novo pela página de Releases. Se antes do `False` aparecer "Não é possível localizar o caminho", o arquivo não foi encontrado com esse nome nessa pasta, e o resultado não diz nada sobre a integridade.
 
 ## Primeiros passos
 

@@ -4,6 +4,7 @@
 
 - Notas das versões com lista de downloads, conferência de hash e instruções de atualização, geradas a partir de `.github/release-notes.md`; uma tag sem a seção correspondente no CHANGELOG é recusada.
 - Captura da tela Sobre atualizada para a versão 0.3.2.
+- Conferência do download explicada passo a passo no README e nas notas, que trazem o comando pronto com o hash esperado de cada executável e avisam que o ZIP do botão **Code** não contém o aplicativo.
 
 ## 0.3.2 — 2026-10-09
 
