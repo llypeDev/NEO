@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/release.yml
+      - .github/release-notes.md
       - package.json
       - package-lock.json
   workflow_dispatch:
@@ -43,6 +44,17 @@ jobs:
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
           if ("v$version" -ne $env:GITHUB_REF_NAME) { throw "A tag $env:GITHUB_REF_NAME não corresponde à versão $version do package.json." }
+      - name: Preparar as notas da versão
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          # A seção da versão no CHANGELOG preenche o modelo; numa tag, ela é obrigatória.
+          $section = (Get-Content CHANGELOG.md -Raw -Encoding utf8) -split '(?m)^## ' | Where-Object { $_ -match "^$([regex]::Escape($version))\s" } | Select-Object -First 1
+          if (-not $section -and $env:GITHUB_REF -like 'refs/tags/*') { throw "O CHANGELOG.md não tem a seção $version." }
+          $changes = if ($section) { ($section -split "`n", 2)[1].Trim() } else { '- Consulte o [histórico de versões](https://github.com/llypeDev/NEO/blob/main/CHANGELOG.md).' }
+          $notes = (Get-Content .github/release-notes.md -Raw -Encoding utf8).Replace('{{version}}', $version).Replace('{{changes}}', $changes).Trim()
+          Set-Content -LiteralPath "$env:RUNNER_TEMP\notas.md" -Value $notes -Encoding utf8
+          Get-Content -LiteralPath "$env:RUNNER_TEMP\notas.md"
       - name: Verificar código e catálogo
         run: npm run check
       - name: Executar testes
@@ -75,9 +87,6 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          # As notas vêm da seção da versão no CHANGELOG; o rascunho só é publicado manualmente.
-          $section = (Get-Content CHANGELOG.md -Raw -Encoding utf8) -split '(?m)^## ' | Where-Object { $_ -match "^$([regex]::Escape($version))\s" } | Select-Object -First 1
-          $notes = if ($section) { ($section -split "`n", 2)[1].Trim() } else { "Neo $version para Windows." }
-          Set-Content -LiteralPath "$env:RUNNER_TEMP\notas.md" -Value $notes -Encoding utf8
+          # O rascunho só é publicado manualmente, depois de revisado.
           $assets = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-codigo.zip", "SHA256SUMS.txt" | ForEach-Object { Join-Path release $_ }
           gh release create $env:GITHUB_REF_NAME @assets --draft --title "Neo $version" --notes-file "$env:RUNNER_TEMP\notas.md"
