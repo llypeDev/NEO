@@ -1,0 +1,17 @@
+Neo
+Independent Windows adaptation of Pulse, by qunqin24.
+Original: https://github.com/qunqin24/Pulse
+Source analyzed: 73e210f10fc98b5e097fd0ee8c021f9965327ebe (2026-10-09).
+
+Copyright (c) 2026 qunqin24. Original Pulse code and captured provider fixtures
+are licensed under the Apache License, Version 2.0.
+
+Provider SVG marks and berth geometry are adapted from the Pulse repository.
+The Neo ribbon N logo was supplied by the user and is preserved as provided.
+Windows application, JavaScript translations, adapted interface, Windows
+credential storage, tray and packaging are new/adapted works, also distributed
+under Apache-2.0. This project is not an official release from the Pulse author.
+Original copyright notices and license are retained in LICENSE and this NOTICE.
+
+Provider names are used to identify their respective services. Their use does
+not imply endorsement by those providers.

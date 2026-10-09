@@ -1,0 +1,66 @@
+{
+  "name": "neo",
+  "productName": "Neo",
+  "version": "0.3.1",
+  "description": "Monitor local de cotas de IA para Windows, baseado no Pulse de qunqin24",
+  "author": "llypeDev",
+  "license": "Apache-2.0",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "demo": "electron . --demo",
+    "test": "node --test test/*.test.cjs",
+    "check": "node scripts/check.cjs",
+    "build": "electron-builder --win nsis portable --x64",
+    "pack": "electron-builder --win --dir --x64",
+    "json": "node src/cli.cjs --json"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "io.pulse.windows",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "LICENSE",
+      "NOTICE",
+      "README.md",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "artifactName": "Neo-${version}-${arch}-nsis.${ext}"
+    },
+    "portable": {
+      "artifactName": "Neo-${version}-${arch}-portable.${ext}"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/llypeDev/NEO.git"
+  },
+  "homepage": "https://github.com/llypeDev/NEO#readme",
+  "bugs": {
+    "url": "https://github.com/llypeDev/NEO/issues"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
