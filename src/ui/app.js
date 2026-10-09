@@ -102,7 +102,7 @@ function openAccount(id,providerId){
     e.preventDefault();const el=id=>document.getElementById(id),secret=el('account-secret')?.value,clear=el('clear-secret')?.checked;
     const next={...a,label:el('account-label').value,enabled:el('account-enabled').checked,localAuth:el('account-local')?.checked??false,remoteAccountId:el('account-remote')?.value||'',baseUrl:el('account-base')?.value||'',captureFile:p.id==='extension'?'':el('account-file').value,file:p.id==='extension'?el('account-file').value:'',pinned:el('account-pin')?.value||''};
     if(!p.live&&!next.captureFile&&!next.file){toast('Selecione o arquivo JSON desse conector.');return;}
-    const accounts=[...state.settings.accounts.filter(x=>x.id!==a.id),next];
+    const accounts=existing?state.settings.accounts.map(x=>x.id===a.id?next:x):[...state.settings.accounts,next];
     const saved=await attempt(()=>window.pulse.saveSettings({...state.settings,accounts}));if(!saved)return;
     if(secret||clear){const ok=await attempt(()=>window.pulse.saveCredential(a.id,clear?'':secret));if(!ok)return;}
     state=await window.pulse.snapshot();close();render();toast('Conexão salva.');

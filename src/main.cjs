@@ -122,22 +122,25 @@ async function refresh(accountId){
     await Promise.all(Array.from({length:Math.min(4,accounts.length)},async()=>{
       while(index<accounts.length){
         const a=accounts[index++],revision=accountRevisions[a.id]||0;
-        const raw=await fetchAccount(a,store.credential(a.id),net.fetch.bind(net));
-        if(!settings.accounts.some(x=>x.id===a.id&&x.enabled)||(accountRevisions[a.id]||0)!==revision)continue;
-        const previous=readings[a.id];
-        const current=reconcile(raw,previous);
-        if(settings.forecast)current.forecast=forecast(previous,raw);
-        readings[a.id]=current;
-        if(settings.notifications&&Notification.isSupported()){
-          const provider=registry.find(p=>p.id===a.provider);
-          const notified=alertsSeen[a.id]||={};
-          for(const alert of alerts(previous,raw,settings.threshold,notified)){
-            new Notification({title:`${a.label||provider.name} · ${alert.window.label}`,body:alert.type==='spent'?'O serviço informou que este limite está esgotado.':alert.type==='reset'?'O serviço informou uma nova janela de uso.':`${Math.round(alert.window.usedPercent)}% da cota utilizado.`,icon:path.join(__dirname,'..','assets','icon.png')}).show();
+        // One account's failure must not stop the others or the cache write.
+        try{
+          const raw=await fetchAccount(a,store.credential(a.id),net.fetch.bind(net));
+          if(!settings.accounts.some(x=>x.id===a.id&&x.enabled)||(accountRevisions[a.id]||0)!==revision)continue;
+          const previous=readings[a.id];
+          const current=reconcile(raw,previous);
+          if(settings.forecast)current.forecast=forecast(previous,raw);
+          readings[a.id]=current;
+          if(settings.notifications&&Notification.isSupported()){
+            const provider=registry.find(p=>p.id===a.provider);
+            const notified=alertsSeen[a.id]||={};
+            for(const alert of alerts(previous,raw,settings.threshold,notified)){
+              new Notification({title:`${a.label||provider.name} · ${alert.window.label}`,body:alert.type==='spent'?'O serviço informou que este limite está esgotado.':alert.type==='reset'?'O serviço informou uma nova janela de uso.':`${Math.round(alert.window.usedPercent)}% da cota utilizado.`,icon:path.join(__dirname,'..','assets','icon.png')}).show();
+            }
+            errorCounts[a.id]=raw.state==='unavailable'?(errorCounts[a.id]||0)+1:0;
+            if(errorCounts[a.id]===3)new Notification({title:`${a.label||provider.name} · Consulta indisponível`,body:'Três consultas seguidas falharam. Abra o Neo para verificar a conexão.'}).show();
           }
-          errorCounts[a.id]=raw.state==='unavailable'?(errorCounts[a.id]||0)+1:0;
-          if(errorCounts[a.id]===3)new Notification({title:`${a.label||provider.name} · Consulta indisponível`,body:'Três consultas seguidas falharam. Abra o Neo para verificar a conexão.'}).show();
-        }
-        broadcast();
+          broadcast();
+        }catch(e){console.error(`Falha ao processar a conta ${a.id}:`,e);}
       }
     }));
     store.saveCache(readings);
@@ -304,7 +307,7 @@ else{
     if(!smoke){tray=new Tray(nativeImage.createFromPath(path.join(__dirname,'..','assets','icon.png')));tray.on('click',openSettings);}
     try{configureShortcuts();}catch{settings.shortcuts={toggle:'',settings:''};}
     updatePanel();openSettings();
-    screen.on('display-removed',updatePanel);screen.on('display-metrics-changed',updatePanel);nativeTheme.on('updated',broadcast);
+    screen.on('display-added',updatePanel);screen.on('display-removed',updatePanel);screen.on('display-metrics-changed',updatePanel);nativeTheme.on('updated',broadcast);
     powerMonitor.on('resume',()=>refresh());
     if(smoke)smokeTest().catch(e=>{fs.writeFileSync(path.join(app.getPath('userData'),'smoke-error.txt'),e.stack);app.exit(1);});else refresh();
   });
