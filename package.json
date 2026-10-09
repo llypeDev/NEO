@@ -1,7 +1,7 @@
 {
   "name": "neo",
   "productName": "Neo",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Monitor local de cotas de IA para Windows, baseado no Pulse de qunqin24",
   "author": "llypeDev",
   "license": "Apache-2.0",

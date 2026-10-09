@@ -1,4 +1,4 @@
-# Visual do Neo — 0.3.2
+# Visual do Neo — 0.3.3
 
 A referência é o GIF fornecido pelo usuário e o código do Pulse na revisão `73e210f10fc98b5e097fd0ee8c021f9965327ebe`. A marca do aplicativo foi substituída por Neo e a logo N em fita preta enviada pelo usuário; os símbolos dos provedores conservam sua atribuição.
 

@@ -1,13 +1,13 @@
 # Histórico de versões
 
-## Não publicado
+## 0.3.3 — 2026-10-09
 
 - Nova opção `Neo-x.y.z-x64.zip`, o aplicativo sem instalador e sem autoextração, para quando o antivírus da empresa bloqueia o portátil. O portátil passa a se extrair sempre para `%TEMP%\Neo-<versão>`, um caminho previsível que a TI pode liberar.
 - A consulta ao Antigravity envia o script do PowerShell pela entrada padrão, sem comando codificado na linha de comando, padrão que antivírus corporativos costumam bloquear.
 - Remoção do iniciador `Abrir-Neo.cmd`/`Abrir-Neo.ps1`, que usava `-ExecutionPolicy Bypass` e encerrava processos; a versão nova agora assume sozinha o lugar da anterior.
 - Abrir uma versão mais nova pede à anterior aberta no mesmo perfil que saia, e a nova assume a bandeja; abrir uma versão igual ou mais antiga continua mostrando a janela da que já está aberta. A 0.3.1 e a 0.3.2 não atendem ao pedido: nesse caso, um aviso pede para fechá-las pela bandeja e oferece **Tentar de novo**, sem encerrar processos nem usar PowerShell.
 - Notas das versões com lista de downloads, conferência de hash e instruções de atualização, geradas a partir de `.github/release-notes.md`; uma tag sem a seção correspondente no CHANGELOG é recusada.
-- Captura da tela Sobre atualizada para a versão 0.3.2.
+- Captura da tela Sobre atualizada para a versão 0.3.3.
 - Conferência do download explicada passo a passo no README e nas notas, que trazem o comando pronto com o hash esperado de cada executável e avisam que o ZIP do botão **Code** não contém o aplicativo.
 
 ## 0.3.2 — 2026-10-09
