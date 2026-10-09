@@ -1,6 +1,6 @@
 # Histórico de versões
 
-## Não publicado
+## 0.3.2 — 2026-10-09
 
 - Preservação das contas válidas quando o perfil contém uma conta que esta versão não reconhece; antes, todas eram descartadas e o arquivo era sobrescrito no próximo salvamento.
 - Cópia de `settings.json` ou `secrets.json` danificado para `*.invalid-<data>.json` antes do reparo.

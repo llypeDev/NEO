@@ -28,7 +28,7 @@
 O **Neo** é uma adaptação independente do [Pulse](https://github.com/qunqin24/Pulse), de **qunqin24**, para Windows. A interface está em português brasileiro e reúne várias contas em um só lugar, sem um servidor próprio do Neo.
 
 > [!NOTE]
-> A versão **0.3.1** tem adaptadores para os 77 provedores do catálogo analisado. Isso indica código implementado, não autenticação comprovada em todos os serviços. A disponibilidade depende do plano, da credencial e dos endpoints do provedor. Consulte a [cobertura completa](PROVEDORES.md) e o [estado atual](#estado-atual).
+> A versão **0.3.2** tem adaptadores para os 77 provedores do catálogo analisado. Isso indica código implementado, não autenticação comprovada em todos os serviços. A disponibilidade depende do plano, da credencial e dos endpoints do provedor. Consulte a [cobertura completa](PROVEDORES.md) e o [estado atual](#estado-atual).
 
 ## O que você pode fazer
 
@@ -52,12 +52,12 @@ O **Neo** é uma adaptação independente do [Pulse](https://github.com/qunqin24
 
 Escolha um arquivo na página de [Releases](https://github.com/llypeDev/NEO/releases/latest):
 
-| Arquivo da versão 0.3.1 | Indicado para |
+| Arquivo da versão 0.3.2 | Indicado para |
 | --- | --- |
-| [Neo-0.3.1-x64-nsis.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.1/Neo-0.3.1-x64-nsis.exe) | **Instalação normal:** assistente de instalação, atalho e opção de desinstalar pelo Windows. |
-| [Neo-0.3.1-x64-portable.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.1/Neo-0.3.1-x64-portable.exe) | **Uso portátil:** salve em uma pasta permanente e execute, sem instalação. As preferências ainda ficam no perfil do Windows. |
-| [Neo-0.3.1-codigo.zip](https://github.com/llypeDev/NEO/releases/download/v0.3.1/Neo-0.3.1-codigo.zip) | **Desenvolvimento:** código, testes, documentação e imagens; não é o aplicativo pronto. |
-| [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.1/SHA256SUMS.txt) | Conferir a integridade dos arquivos baixados. |
+| [Neo-0.3.2-x64-nsis.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-x64-nsis.exe) | **Instalação normal:** assistente de instalação, atalho e opção de desinstalar pelo Windows. |
+| [Neo-0.3.2-x64-portable.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-x64-portable.exe) | **Uso portátil:** salve em uma pasta permanente e execute, sem instalação. As preferências ainda ficam no perfil do Windows. |
+| [Neo-0.3.2-codigo.zip](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-codigo.zip) | **Desenvolvimento:** código, testes, documentação e imagens; não é o aplicativo pronto. |
+| [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.2/SHA256SUMS.txt) | Conferir a integridade dos arquivos baixados. |
 
 1. Baixe o instalador ou o executável portátil.
 2. Execute o arquivo. No instalador, escolha a pasta e conclua o assistente.
@@ -66,7 +66,7 @@ Escolha um arquivo na página de [Releases](https://github.com/llypeDev/NEO/rele
 A distribuição inicial não tem assinatura digital. Se o Windows apresentar uma identificação de editor desconhecido, confira a origem do arquivo e seu hash antes de decidir executá-lo. O hash SHA-256 pode ser consultado no PowerShell:
 
 ```powershell
-Get-FileHash .\Neo-0.3.1-x64-portable.exe -Algorithm SHA256
+Get-FileHash .\Neo-0.3.2-x64-portable.exe -Algorithm SHA256
 ```
 
 ## Primeiros passos
@@ -259,7 +259,7 @@ Quando houver uma data real de renovação, use uma string ISO 8601 em `resetsAt
 
 ## Estado atual
 
-O Neo 0.3.1 oferece o catálogo de 77 conectores e os recursos de interface descritos neste README. A validação local inclui **106 testes automatizados** e **24 verificações do executável portátil no Windows**, incluindo sandbox das janelas, catálogo, comunicação, criptografia de credenciais, geometrias e animação. Os testes de provedores usam fixtures e simulações; não comprovam o acesso real aos 77 serviços.
+O Neo 0.3.2 oferece o catálogo de 77 conectores e os recursos de interface descritos neste README. A validação local inclui **106 testes automatizados** e **24 verificações do executável portátil no Windows**, incluindo sandbox das janelas, catálogo, comunicação, criptografia de credenciais, geometrias e animação. Os testes de provedores usam fixtures e simulações; não comprovam o acesso real aos 77 serviços.
 
 Ainda estão pendentes:
 
