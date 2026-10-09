@@ -160,7 +160,11 @@ O histórico de tokens é lido somente após habilitar **Permitir leitura dos re
 
 ## Atualizar o Neo
 
-Não há atualização automática nesta versão. Baixe a nova versão em [Releases](https://github.com/llypeDev/NEO/releases), encerre o Neo pelo menu da bandeja e execute o novo instalador ou portátil. As contas permanecem no mesmo perfil do Windows.
+Não há atualização automática nesta versão. Baixe a nova versão em [Releases](https://github.com/llypeDev/NEO/releases) e execute o novo instalador ou portátil. As contas permanecem no mesmo perfil do Windows.
+
+Ao abrir uma versão mais nova, ela pede à versão anterior aberta no mesmo perfil que saia e assume a bandeja. Abrir uma versão igual ou mais antiga só mostra a janela da que já está aberta.
+
+As versões 0.3.1 e 0.3.2 não atendem a esse pedido. Se uma delas estiver aberta, a versão nova mostra um aviso: clique com o botão direito no ícone do Neo na bandeja, escolha **Sair** e depois clique em **Tentar de novo**.
 
 Para quem compila o código, **Abrir-Neo.cmd** seleciona o portátil mais recente em `release/` e reinicia uma versão anterior aberta pela mesma pasta. Mantenha **Abrir-Neo.ps1** ao lado do arquivo `.cmd`. O mesmo iniciador também aceita a estrutura de entrega anterior, com `Neo/release/`.
 
@@ -173,7 +177,7 @@ Para quem compila o código, **Abrir-Neo.cmd** seleciona o portátil mais recent
 | **A consulta retorna 401/403** | Verifique se o login expirou, se o token pertence ao produto correto e se o plano permite consultar essa métrica. Para login local, autentique novamente o cliente correspondente. |
 | **Não há percentual, só saldo** | Alguns serviços informam saldo em dinheiro ou créditos sem uma cota percentual. |
 | **Aparece uma leitura antiga** | Atualize a conta. Para um JSON local, atualize também o arquivo; ele recebe a data de sua última modificação e fica antigo após dez minutos. |
-| **Abre uma versão antiga** | Encerre o Neo pela bandeja e abra o executável novo. Em uma pasta com versões compiladas, use **Abrir-Neo.cmd**. |
+| **Abre uma versão antiga** | Confira em **Sobre** a versão aberta. Se aparecer o aviso de versão anterior, clique em **Sair** no ícone do Neo na bandeja e depois em **Tentar de novo**. Em uma pasta com versões compiladas, use **Abrir-Neo.cmd**. |
 | **O atalho não funciona** | Escolha outra combinação em **Geral**; outro aplicativo pode estar usando o mesmo atalho. |
 | **A credencial deixou de funcionar em outro PC** | Cadastre-a novamente. O arquivo protegido não é uma credencial portátil entre usuários ou computadores. |
 

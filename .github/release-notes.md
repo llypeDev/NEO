@@ -30,6 +30,6 @@ Um `False` sem mensagem de erro indica um arquivo diferente do publicado: apague
 
 ### Atualizar
 
-Encerre o Neo pelo menu da bandeja e execute o novo instalador ou portátil. As contas continuam no perfil `%APPDATA%\Pulse Windows`.
+Execute o novo instalador ou portátil. A versão anterior aberta sai sozinha e a nova assume a bandeja; se for a 0.3.1 ou a 0.3.2, a nova pede que você clique em **Sair** no ícone do Neo na bandeja e depois em **Tentar de novo**. As contas continuam no perfil `%APPDATA%\Pulse Windows`.
 
 Leia o [README](https://github.com/llypeDev/NEO#readme), o [guia de configuração](https://github.com/llypeDev/NEO/blob/main/docs/CONFIGURACAO.md) e a [cobertura dos provedores](https://github.com/llypeDev/NEO/blob/main/PROVEDORES.md).

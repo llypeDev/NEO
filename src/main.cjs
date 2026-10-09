@@ -10,6 +10,7 @@ const {reconcile,forecast,alerts,headline,activeWindows}=require('./core.cjs');
 const {scanHistory}=require('./ledger.cjs');
 const {panelLayout}=require('./panel-layout.cjs');
 const {panelBounds:geometryBounds,clamp}=require('./dock-geometry.cjs');
+const {acquireLock,newer,instanceFile,readHolder}=require('./instances.cjs');
 const demoMode=process.argv.includes('--demo')||process.argv.includes('--smoke');
 const smoke=process.argv.includes('--smoke');
 if(process.env.PULSE_WINDOWS_DATA)app.setPath('userData',path.resolve(process.env.PULSE_WINDOWS_DATA));
@@ -296,9 +297,29 @@ async function smokeTest(){
 }
 if(process.argv.includes('--json')){
   app.whenReady().then(()=>{store=new Storage(app.getPath('userData'),safeStorage);settings=store.settings();readings=store.cache();console.log(JSON.stringify({version:1,accounts:settings.accounts.filter(a=>a.enabled).map(a=>({...readings[a.id],accountId:a.id,provider:a.provider,windows:activeWindows(readings[a.id])}))}));app.exit(0);});
-}else if(!app.requestSingleInstanceLock())app.quit();
-else{
-  app.on('second-instance',openSettings);
+}else start();
+async function start(){
+  // Opening a newer Neo replaces an older one on the same profile instead of showing the old window.
+  const version=app.getVersion(),userData=app.getPath('userData'),instance=instanceFile(userData);
+  const take=()=>acquireLock({request:()=>app.requestSingleInstanceLock({neoVersion:version,pid:process.pid}),version,holder:()=>readHolder(userData)});
+  let result=await take();
+  // Releases up to 0.3.2 cannot be asked to quit, so the person closes them from the tray and retries here.
+  while(result==='legacy'||result==='timeout'){
+    await app.whenReady();
+    const {response}=await dialog.showMessageBox({type:'info',title:'Neo',message:'Uma versão anterior do Neo continua aberta.',detail:`Para abrir a versão ${version}, clique com o botão direito no ícone do Neo na bandeja do Windows, escolha Sair e depois clique em Tentar de novo.`,buttons:['Tentar de novo','Cancelar'],defaultId:0,cancelId:1,noLink:true});
+    if(response!==0)break;
+    result=await take();
+  }
+  if(result!=='acquired'){app.quit();return;}
+  try{write(instance,{version,pid:process.pid});}catch{/* Without it, a newer Neo asks the person to close this one. */}
+  app.on('will-quit',()=>{if(readHolder(userData,()=>true)?.pid===process.pid)fs.rmSync(instance,{force:true});});
+  let lastCaller=null;
+  app.on('second-instance',(_event,_argv,_cwd,data)=>{
+    if(newer(data?.neoVersion,version)){app.quit();return;}
+    // A newer instance retries while it waits; only its first request opens the window.
+    if(data?.pid&&data.pid===lastCaller)return;
+    lastCaller=data?.pid??null;openSettings();
+  });
   app.on('before-quit',()=>{quitting=true;clearTimeout(timer);clearInterval(dragTimer);globalShortcut.unregisterAll();});
   app.on('window-all-closed',()=>{/* Tray keeps the monitor alive. */});
   app.whenReady().then(()=>{
