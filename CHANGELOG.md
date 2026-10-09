@@ -2,6 +2,7 @@
 
 ## Não publicado
 
+- Abrir uma versão mais nova pede à anterior aberta no mesmo perfil que saia, e a nova assume a bandeja; abrir uma versão igual ou mais antiga continua mostrando a janela da que já está aberta. A 0.3.1 e a 0.3.2 não atendem ao pedido: nesse caso, um aviso pede para fechá-las pela bandeja e oferece **Tentar de novo**, sem encerrar processos nem usar PowerShell.
 - Notas das versões com lista de downloads, conferência de hash e instruções de atualização, geradas a partir de `.github/release-notes.md`; uma tag sem a seção correspondente no CHANGELOG é recusada.
 - Captura da tela Sobre atualizada para a versão 0.3.2.
 - Conferência do download explicada passo a passo no README e nas notas, que trazem o comando pronto com o hash esperado de cada executável e avisam que o ZIP do botão **Code** não contém o aplicativo.
