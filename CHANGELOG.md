@@ -1,5 +1,10 @@
 # Histórico de versões
 
+## Não publicado
+
+- Notas das versões com lista de downloads, conferência de hash e instruções de atualização, geradas a partir de `.github/release-notes.md`; uma tag sem a seção correspondente no CHANGELOG é recusada.
+- Captura da tela Sobre atualizada para a versão 0.3.2.
+
 ## 0.3.2 — 2026-10-09
 
 - Preservação das contas válidas quando o perfil contém uma conta que esta versão não reconhece; antes, todas eram descartadas e o arquivo era sobrescrito no próximo salvamento.

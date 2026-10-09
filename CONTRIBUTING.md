@@ -46,7 +46,7 @@ A validação automática do GitHub executa os testes, a verificação de sintax
 
 1. Atualize a versão em `package.json` e `package-lock.json` (`npm.cmd version X.Y.Z --no-git-tag-version`) e descreva as mudanças em uma seção `## X.Y.Z — data` do `CHANGELOG.md`.
 2. Depois do merge, crie e envie a tag: `git tag vX.Y.Z` e `git push origin vX.Y.Z`.
-3. O workflow **Publicação** confere a tag, executa os testes, gera o instalador, o portátil, o ZIP do código e o `SHA256SUMS.txt` e cria um rascunho da versão com as notas do CHANGELOG.
+3. O workflow **Publicação** confere a tag, executa os testes, gera o instalador, o portátil, o ZIP do código e o `SHA256SUMS.txt` e cria um rascunho da versão. As notas juntam a seção do CHANGELOG ao modelo `.github/release-notes.md`, que traz a lista de downloads e as instruções de atualização; o workflow mostra o resultado no log também em PRs que alteram o empacotamento.
 4. Revise o rascunho em Releases e publique-o.
 
 ## Reportar um problema
