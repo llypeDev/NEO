@@ -9,6 +9,7 @@
   "scripts": {
     "start": "electron .",
     "demo": "electron . --demo",
+    "smoke": "electron . --smoke",
     "test": "node --test test/*.test.cjs",
     "check": "node scripts/check.cjs",
     "build": "electron-builder --win nsis portable --x64",

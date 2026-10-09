@@ -40,7 +40,14 @@ Verifique os temas claro e escuro e o funcionamento com mais de uma conta. Evite
 - Inclua imagens quando elas ajudarem a avaliar uma alteração visual.
 - Atualize a documentação afetada e preserve a compatibilidade do perfil existente.
 
-A validação automática do GitHub executa os testes e a verificação de sintaxe no Windows. Ela não autentica contas reais dos provedores.
+A validação automática do GitHub executa os testes, a verificação de sintaxe e o smoke test da interface no Windows; as capturas ficam nos artefatos da execução. Mudanças em `package.json`, `package-lock.json` ou no workflow de publicação também geram os pacotes, sem publicá-los. Ela não autentica contas reais dos provedores.
+
+## Publicar uma versão
+
+1. Atualize a versão em `package.json` e `package-lock.json` (`npm.cmd version X.Y.Z --no-git-tag-version`) e descreva as mudanças em uma seção `## X.Y.Z — data` do `CHANGELOG.md`.
+2. Depois do merge, crie e envie a tag: `git tag vX.Y.Z` e `git push origin vX.Y.Z`.
+3. O workflow **Publicação** confere a tag, executa os testes, gera o instalador, o portátil, o ZIP do código e o `SHA256SUMS.txt` e cria um rascunho da versão com as notas do CHANGELOG.
+4. Revise o rascunho em Releases e publique-o.
 
 ## Reportar um problema
 

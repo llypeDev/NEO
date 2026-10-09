@@ -32,3 +32,42 @@ jobs:
         run: npm run check
       - name: Executar testes
         run: npm test
+
+  smoke:
+    name: Interface no Windows
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Instalar dependências sem executar scripts
+        run: npm ci --ignore-scripts
+      - name: Baixar o Electron
+        run: node node_modules/electron/install.js
+      - name: Executar o smoke test
+        timeout-minutes: 5
+        env:
+          PULSE_WINDOWS_DATA: ${{ runner.temp }}\neo-smoke-data
+          PULSE_SMOKE_OUTPUT: ${{ runner.temp }}\neo-smoke
+        run: npm run smoke
+      - name: Mostrar o resultado
+        if: always()
+        shell: pwsh
+        run: |
+          Get-Content -LiteralPath "$env:RUNNER_TEMP\neo-smoke\smoke-result.json" -ErrorAction SilentlyContinue
+          Get-Content -LiteralPath "$env:RUNNER_TEMP\neo-smoke-data\smoke-error.txt" -ErrorAction SilentlyContinue
+      - name: Guardar as capturas
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: capturas-da-interface
+          path: ${{ runner.temp }}/neo-smoke
+          if-no-files-found: ignore
+          retention-days: 7

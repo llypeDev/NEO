@@ -191,6 +191,7 @@ npm.cmd run demo
 | --- | --- |
 | `npm.cmd start` | Abre o aplicativo usando o perfil normal. |
 | `npm.cmd run demo` | Abre uma demonstração com contas e valores fictícios. |
+| `npm.cmd run smoke` | Verifica a interface em modo de demonstração e salva capturas no perfil de teste. |
 | `npm.cmd test` | Executa os testes de parsers, cache, contratos e geometrias. |
 | `npm.cmd run check` | Confere a sintaxe e a presença dos adaptadores do catálogo. |
 | `npm.cmd run json` | Exporta o cache local pelo terminal, sem iniciar Electron ou consultar a rede. |

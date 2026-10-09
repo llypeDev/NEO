@@ -10,6 +10,7 @@
 - Versão do aplicativo lida do `package.json` e quantidade de conectores derivada do catálogo.
 - Menos trabalho por atualização: estado calculado uma vez por envio e região da faixa enviada só quando muda.
 - CLIs dos provedores não são procurados em entradas relativas do `PATH`; consulta após a suspensão aguarda a rede voltar.
+- Smoke test da interface no CI do Windows, com capturas nos artefatos; workflow de publicação por tag que gera os pacotes, as somas SHA-256 e um rascunho da versão; Dependabot para npm e GitHub Actions.
 - Acessibilidade: nomes legíveis em seletores e grupos de opções, foco preso no modal e devolvido ao fechar, busca de provedores sem acentos.
 
 ## 0.3.1 — 2026-10-09

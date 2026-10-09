@@ -1,0 +1,83 @@
+name: Publicação
+
+on:
+  push:
+    tags: ['v*']
+  # Mudanças de empacotamento geram os pacotes no PR, sem publicar.
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - package.json
+      - package-lock.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Pacotes Windows
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Instalar dependências sem executar scripts
+        run: npm ci --ignore-scripts
+      - name: Conferir a versão da tag
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ("v$version" -ne $env:GITHUB_REF_NAME) { throw "A tag $env:GITHUB_REF_NAME não corresponde à versão $version do package.json." }
+      - name: Verificar código e catálogo
+        run: npm run check
+      - name: Executar testes
+        run: npm test
+      - name: Gerar instalador e portátil
+        run: npm run build -- --publish never
+      - name: Empacotar código e somas SHA-256
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          git archive --format=zip --output "release/Neo-$version-codigo.zip" HEAD
+          $files = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-codigo.zip" | ForEach-Object { Join-Path release $_ }
+          Get-FileHash -Algorithm SHA256 -LiteralPath $files | ForEach-Object { '{0}  {1}' -f $_.Hash.ToLower(), (Split-Path $_.Path -Leaf) } | Set-Content release/SHA256SUMS.txt -Encoding ascii
+          Get-Content release/SHA256SUMS.txt
+      - name: Guardar os pacotes
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: neo-windows
+          path: |
+            release/*.exe
+            release/*-codigo.zip
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
+      - name: Criar rascunho da versão
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          # As notas vêm da seção da versão no CHANGELOG; o rascunho só é publicado manualmente.
+          $section = (Get-Content CHANGELOG.md -Raw -Encoding utf8) -split '(?m)^## ' | Where-Object { $_ -match "^$([regex]::Escape($version))\s" } | Select-Object -First 1
+          $notes = if ($section) { ($section -split "`n", 2)[1].Trim() } else { "Neo $version para Windows." }
+          Set-Content -LiteralPath "$env:RUNNER_TEMP\notas.md" -Value $notes -Encoding utf8
+          $assets = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-codigo.zip", "SHA256SUMS.txt" | ForEach-Object { Join-Path release $_ }
+          gh release create $env:GITHUB_REF_NAME @assets --draft --title "Neo $version" --notes-file "$env:RUNNER_TEMP\notas.md"
