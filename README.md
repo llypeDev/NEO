@@ -28,7 +28,7 @@
 O **Neo** é uma adaptação independente do [Pulse](https://github.com/qunqin24/Pulse), de **qunqin24**, para Windows. A interface está em português brasileiro e reúne várias contas em um só lugar, sem um servidor próprio do Neo.
 
 > [!NOTE]
-> A versão **0.3.2** tem adaptadores para os 77 provedores do catálogo analisado. Isso indica código implementado, não autenticação comprovada em todos os serviços. A disponibilidade depende do plano, da credencial e dos endpoints do provedor. Consulte a [cobertura completa](PROVEDORES.md) e o [estado atual](#estado-atual).
+> A versão **0.3.3** tem adaptadores para os 77 provedores do catálogo analisado. Isso indica código implementado, não autenticação comprovada em todos os serviços. A disponibilidade depende do plano, da credencial e dos endpoints do provedor. Consulte a [cobertura completa](PROVEDORES.md) e o [estado atual](#estado-atual).
 
 ## O que você pode fazer
 
@@ -52,15 +52,16 @@ O **Neo** é uma adaptação independente do [Pulse](https://github.com/qunqin24
 
 Escolha um arquivo na página de [Releases](https://github.com/llypeDev/NEO/releases/latest):
 
-| Arquivo da versão 0.3.2 | Indicado para |
+| Arquivo da versão 0.3.3 | Indicado para |
 | --- | --- |
-| [Neo-0.3.2-x64-nsis.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-x64-nsis.exe) | **Instalação normal:** assistente de instalação, atalho e opção de desinstalar pelo Windows. |
-| [Neo-0.3.2-x64-portable.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-x64-portable.exe) | **Uso portátil:** salve em uma pasta permanente e execute, sem instalação. As preferências ainda ficam no perfil do Windows. |
-| [Neo-0.3.2-codigo.zip](https://github.com/llypeDev/NEO/releases/download/v0.3.2/Neo-0.3.2-codigo.zip) | **Desenvolvimento:** código, testes, documentação e imagens; não é o aplicativo pronto. |
-| [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.2/SHA256SUMS.txt) | Conferir a integridade dos arquivos baixados. |
+| [Neo-0.3.3-x64-nsis.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.3/Neo-0.3.3-x64-nsis.exe) | **Instalação normal:** assistente de instalação, atalho e opção de desinstalar pelo Windows. |
+| [Neo-0.3.3-x64-portable.exe](https://github.com/llypeDev/NEO/releases/download/v0.3.3/Neo-0.3.3-x64-portable.exe) | **Uso portátil:** salve em uma pasta permanente e execute, sem instalação. A cada abertura, ele se extrai para `%TEMP%\Neo-0.3.3`. As preferências ainda ficam no perfil do Windows. |
+| [Neo-0.3.3-x64.zip](https://github.com/llypeDev/NEO/releases/download/v0.3.3/Neo-0.3.3-x64.zip) | **Sem instalador nem autoextração:** descompacte em uma pasta permanente e abra o `Neo.exe`. Indicado quando o antivírus da empresa bloqueia o portátil. |
+| [Neo-0.3.3-codigo.zip](https://github.com/llypeDev/NEO/releases/download/v0.3.3/Neo-0.3.3-codigo.zip) | **Desenvolvimento:** código, testes, documentação e imagens; não é o aplicativo pronto. |
+| [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.3/SHA256SUMS.txt) | Conferir a integridade dos arquivos baixados. |
 
-1. Baixe o instalador ou o executável portátil na lista **Assets** da release. O ZIP do botão **Code** do GitHub, assim como o `Neo-0.3.2-codigo.zip`, contém só o código-fonte, sem o aplicativo.
-2. Execute o arquivo. No instalador, escolha a pasta e conclua o assistente.
+1. Baixe o instalador, o executável portátil ou o ZIP na lista **Assets** da release. O ZIP do botão **Code** do GitHub, assim como o `Neo-0.3.3-codigo.zip`, contém só o código-fonte, sem o aplicativo.
+2. Execute o arquivo. No instalador, escolha a pasta e conclua o assistente. No ZIP, descompacte-o em uma pasta permanente e abra o `Neo.exe`.
 3. Abra **Neo** e adicione seu primeiro provedor.
 
 ### Conferir o arquivo baixado
@@ -68,14 +69,14 @@ Escolha um arquivo na página de [Releases](https://github.com/llypeDev/NEO/rele
 Os executáveis não têm assinatura digital. Se o Windows apresentar uma identificação de editor desconhecido, confira a origem do arquivo e seu hash antes de decidir executá-lo:
 
 1. Abra o PowerShell e entre na pasta em que o arquivo foi salvo, normalmente Downloads.
-2. Confira o nome do arquivo com `Get-ChildItem Neo-*.exe`. Se nada aparecer, o download não está nessa pasta. O navegador pode ter salvo o arquivo em outro lugar ou acrescentado " (1)" ao nome.
-3. Copie o hash do arquivo nas notas da release ou na linha correspondente do [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.2/SHA256SUMS.txt).
+2. Confira o nome do arquivo com `Get-ChildItem Neo-*.exe, Neo-*.zip`. Se nada aparecer, o download não está nessa pasta. O navegador pode ter salvo o arquivo em outro lugar ou acrescentado " (1)" ao nome.
+3. Copie o hash do arquivo nas notas da release ou na linha correspondente do [SHA256SUMS.txt](https://github.com/llypeDev/NEO/releases/download/v0.3.3/SHA256SUMS.txt).
 4. Rode o comando abaixo colando o hash entre as aspas. Use o nome que o `Get-ChildItem` mostrou. O resultado deve ser `True`.
 
 ```powershell
 cd $env:USERPROFILE\Downloads
-Get-ChildItem Neo-*.exe
-(Get-FileHash .\Neo-0.3.2-x64-portable.exe -Algorithm SHA256).Hash -eq 'cole-aqui-o-hash'
+Get-ChildItem Neo-*.exe, Neo-*.zip
+(Get-FileHash .\Neo-0.3.3-x64-portable.exe -Algorithm SHA256).Hash -eq 'cole-aqui-o-hash'
 ```
 
 Um `False` sem mensagem de erro indica um arquivo diferente do publicado: apague-o e baixe de novo pela página de Releases. Se antes do `False` aparecer "Não é possível localizar o caminho", o arquivo não foi encontrado com esse nome nessa pasta, e o resultado não diz nada sobre a integridade.
@@ -166,8 +167,6 @@ A partir da 0.3.3, ao abrir uma versão mais nova, ela pede à versão anterior 
 
 Para instalar a 0.3.2 ou uma versão anterior, encerre antes o Neo pelo menu da bandeja (**Sair**). Sem isso, a janela da versão que já estava aberta reaparece e a nova não é iniciada.
 
-Para quem compila o código, **Abrir-Neo.cmd** seleciona o portátil mais recente em `release/` e reinicia uma versão anterior aberta pela mesma pasta. Mantenha **Abrir-Neo.ps1** ao lado do arquivo `.cmd`. O mesmo iniciador também aceita a estrutura de entrega anterior, com `Neo/release/`.
-
 ## Solução de problemas
 
 | Situação | O que verificar |
@@ -177,7 +176,7 @@ Para quem compila o código, **Abrir-Neo.cmd** seleciona o portátil mais recent
 | **A consulta retorna 401/403** | Verifique se o login expirou, se o token pertence ao produto correto e se o plano permite consultar essa métrica. Para login local, autentique novamente o cliente correspondente. |
 | **Não há percentual, só saldo** | Alguns serviços informam saldo em dinheiro ou créditos sem uma cota percentual. |
 | **Aparece uma leitura antiga** | Atualize a conta. Para um JSON local, atualize também o arquivo; ele recebe a data de sua última modificação e fica antigo após dez minutos. |
-| **Abre uma versão antiga** | Confira em **Sobre** a versão aberta. Se aparecer o aviso de versão anterior, clique em **Sair** no ícone do Neo na bandeja e depois em **Tentar de novo**. Sem aviso, clique em **Sair** na bandeja e abra o executável novo. Em uma pasta com versões compiladas, use **Abrir-Neo.cmd**. |
+| **Abre uma versão antiga** | Confira em **Sobre** a versão aberta. Se aparecer o aviso de versão anterior, clique em **Sair** no ícone do Neo na bandeja e depois em **Tentar de novo**. Sem aviso, clique em **Sair** na bandeja e abra o executável novo. |
 | **O atalho não funciona** | Escolha outra combinação em **Geral**; outro aplicativo pode estar usando o mesmo atalho. |
 | **A credencial deixou de funcionar em outro PC** | Cadastre-a novamente. O arquivo protegido não é uma credencial portátil entre usuários ou computadores. |
 
@@ -211,7 +210,7 @@ npm.cmd run demo
 | `npm.cmd run check` | Confere a sintaxe e a presença dos adaptadores do catálogo. |
 | `npm.cmd run json` | Exporta o cache local pelo terminal, sem iniciar Electron ou consultar a rede. |
 | `npm.cmd run pack` | Gera a aplicação descompactada em `release/win-unpacked/`. |
-| `npm.cmd run build` | Gera instalador NSIS e executável portátil x64 em `release/`. |
+| `npm.cmd run build` | Gera instalador NSIS, executável portátil e ZIP x64 em `release/`. |
 
 Os pacotes e `node_modules/` não entram no Git. Os binários prontos são distribuídos em Releases.
 
@@ -274,7 +273,7 @@ Quando houver uma data real de renovação, use uma string ISO 8601 em `resetsAt
 
 ## Estado atual
 
-O Neo 0.3.2 oferece o catálogo de 77 conectores e os recursos de interface descritos neste README. A validação local inclui **106 testes automatizados** e **24 verificações do executável portátil no Windows**, incluindo sandbox das janelas, catálogo, comunicação, criptografia de credenciais, geometrias e animação. Os testes de provedores usam fixtures e simulações; não comprovam o acesso real aos 77 serviços.
+O Neo 0.3.3 oferece o catálogo de 77 conectores e os recursos de interface descritos neste README. A validação local inclui **120 testes automatizados** e **24 verificações do executável portátil no Windows**, incluindo sandbox das janelas, catálogo, comunicação, criptografia de credenciais, geometrias e animação. Os testes de provedores usam fixtures e simulações; não comprovam o acesso real aos 77 serviços.
 
 Ainda estão pendentes:
 
