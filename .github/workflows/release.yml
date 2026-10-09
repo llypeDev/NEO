@@ -48,14 +48,18 @@ jobs:
         run: npm run check
       - name: Executar testes
         run: npm test
-      - name: Gerar instalador e portátil
-        run: npm run build -- --publish never
+      - name: Gerar instalador, portátil e ZIP
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          # The portable unpacks into a predictable %TEMP%\Neo-<version> folder that IT can allow; versions never share it.
+          npm run build -- --publish never "-c.portable.unpackDirName=Neo-$version"
       - name: Empacotar código e somas SHA-256
         shell: pwsh
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
           git archive --format=zip --output "release/Neo-$version-codigo.zip" HEAD
-          $files = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-codigo.zip" | ForEach-Object { Join-Path release $_ }
+          $files = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-x64.zip", "Neo-$version-codigo.zip" | ForEach-Object { Join-Path release $_ }
           Get-FileHash -Algorithm SHA256 -LiteralPath $files | ForEach-Object { '{0}  {1}' -f $_.Hash.ToLower(), (Split-Path $_.Path -Leaf) } | Set-Content release/SHA256SUMS.txt -Encoding ascii
           Get-Content release/SHA256SUMS.txt
       - name: Preparar as notas da versão
@@ -65,11 +69,11 @@ jobs:
           # A seção da versão no CHANGELOG e os hashes do SHA256SUMS.txt preenchem o modelo; numa tag, a seção é obrigatória.
           $sums = @{}
           foreach ($line in Get-Content release/SHA256SUMS.txt) { $hash, $name = $line -split '\s+', 2; $sums[$name] = $hash }
-          foreach ($file in "Neo-$version-x64-portable.exe", "Neo-$version-x64-nsis.exe") { if (-not $sums[$file]) { throw "O SHA256SUMS.txt não tem o hash de $file." } }
+          foreach ($file in "Neo-$version-x64-portable.exe", "Neo-$version-x64-nsis.exe", "Neo-$version-x64.zip") { if (-not $sums[$file]) { throw "O SHA256SUMS.txt não tem o hash de $file." } }
           $section = (Get-Content CHANGELOG.md -Raw -Encoding utf8) -split '(?m)^## ' | Where-Object { $_ -match "^$([regex]::Escape($version))\s" } | Select-Object -First 1
           if (-not $section -and $env:GITHUB_REF -like 'refs/tags/*') { throw "O CHANGELOG.md não tem a seção $version." }
           $changes = if ($section) { ($section -split "`n", 2)[1].Trim() } else { '- Consulte o [histórico de versões](https://github.com/llypeDev/NEO/blob/main/CHANGELOG.md).' }
-          $notes = (Get-Content .github/release-notes.md -Raw -Encoding utf8).Replace('{{version}}', $version).Replace('{{changes}}', $changes).Replace('{{sha256-portable}}', $sums["Neo-$version-x64-portable.exe"]).Replace('{{sha256-nsis}}', $sums["Neo-$version-x64-nsis.exe"]).Trim()
+          $notes = (Get-Content .github/release-notes.md -Raw -Encoding utf8).Replace('{{version}}', $version).Replace('{{changes}}', $changes).Replace('{{sha256-portable}}', $sums["Neo-$version-x64-portable.exe"]).Replace('{{sha256-nsis}}', $sums["Neo-$version-x64-nsis.exe"]).Replace('{{sha256-zip}}', $sums["Neo-$version-x64.zip"]).Trim()
           if ($notes -match '\{\{') { throw 'O modelo das notas tem um campo sem valor.' }
           Set-Content -LiteralPath "$env:RUNNER_TEMP\notas.md" -Value $notes -Encoding utf8
           Get-Content -LiteralPath "$env:RUNNER_TEMP\notas.md"
@@ -79,6 +83,7 @@ jobs:
           name: neo-windows
           path: |
             release/*.exe
+            release/Neo-*-x64.zip
             release/*-codigo.zip
             release/SHA256SUMS.txt
           if-no-files-found: error
@@ -92,5 +97,5 @@ jobs:
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
           # O rascunho só é publicado manualmente, depois de revisado.
-          $assets = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-codigo.zip", "SHA256SUMS.txt" | ForEach-Object { Join-Path release $_ }
+          $assets = "Neo-$version-x64-nsis.exe", "Neo-$version-x64-portable.exe", "Neo-$version-x64.zip", "Neo-$version-codigo.zip", "SHA256SUMS.txt" | ForEach-Object { Join-Path release $_ }
           gh release create $env:GITHUB_REF_NAME @assets --draft --title "Neo $version" --notes-file "$env:RUNNER_TEMP\notas.md"

@@ -9,9 +9,10 @@
 Baixe um dos arquivos em **Assets**, logo abaixo. O ZIP do botão **Code** e o `Neo-{{version}}-codigo.zip` trazem só o código-fonte, sem o aplicativo.
 
 - **Neo-{{version}}-x64-nsis.exe:** instalador com assistente, atalho e desinstalação pelo Windows.
-- **Neo-{{version}}-x64-portable.exe:** executável portátil; salve em uma pasta permanente e execute.
+- **Neo-{{version}}-x64-portable.exe:** executável portátil; salve em uma pasta permanente e execute. A cada abertura, ele se extrai para `%TEMP%\Neo-{{version}}`.
+- **Neo-{{version}}-x64.zip:** o mesmo aplicativo sem instalador nem extração; descompacte em uma pasta permanente e abra o `Neo.exe`. Indicado quando o antivírus da empresa bloqueia o portátil.
 - **Neo-{{version}}-codigo.zip:** código, testes, imagens e documentação para desenvolvimento.
-- **SHA256SUMS.txt:** hashes dos três arquivos acima.
+- **SHA256SUMS.txt:** hashes dos arquivos acima.
 
 Os executáveis não precisam de Node.js.
 
@@ -21,9 +22,10 @@ Os executáveis não têm assinatura digital. Para confirmar que o arquivo é o 
 
 ```powershell
 cd $env:USERPROFILE\Downloads
-Get-ChildItem Neo-*.exe
+Get-ChildItem Neo-*.exe, Neo-*.zip
 (Get-FileHash .\Neo-{{version}}-x64-portable.exe -Algorithm SHA256).Hash -eq '{{sha256-portable}}'
 (Get-FileHash .\Neo-{{version}}-x64-nsis.exe -Algorithm SHA256).Hash -eq '{{sha256-nsis}}'
+(Get-FileHash .\Neo-{{version}}-x64.zip -Algorithm SHA256).Hash -eq '{{sha256-zip}}'
 ```
 
 Um `False` sem mensagem de erro indica um arquivo diferente do publicado: apague-o e baixe de novo nesta página. Se antes aparecer "Não é possível localizar o caminho", o arquivo não está nessa pasta com esse nome; use o nome que o `Get-ChildItem` mostrou.

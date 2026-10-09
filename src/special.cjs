@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os');
-const {spawn,execFile}=require('node:child_process');
+const {spawn}=require('node:child_process');
 const crypto=require('node:crypto');
 const {version}=require('../package.json');
 const specialIds=new Set(['kiro','antigravity','ollamaCloud','volcengine','alibabaCodingPlan','alibabaTokenPlan','qwenCloud','notionAI','ibmBob','xaiAPI','windsurf','sakana','replicate','typeSafe','jetBrainsAI','devin','zoomMate']);
@@ -62,9 +62,23 @@ async function jetbrainsQuota(){
     if(value)try{out[name]=JSON.parse(value);}catch{}
   }return out;
 }
+// The script goes through stdin, so no encoded command appears on the command line, which endpoint security flags.
+function powershellJSON(script,{spawnProcess=spawn,timeout=15000}={}){
+  return new Promise((resolve,reject)=>{
+    const child=spawnProcess('powershell.exe',['-NoProfile','-NonInteractive','-Command','-'],{windowsHide:true,stdio:['pipe','pipe','ignore']});
+    let out='',done=false;
+    const finish=(err,value)=>{if(done)return;done=true;clearTimeout(timer);child.kill();err?reject(err):resolve(value);};
+    const timer=setTimeout(()=>finish(new Error('O PowerShell excedeu o prazo.')),timeout);
+    child.stdout.on('data',b=>{out+=b;if(out.length>512*1024)finish(new Error('Resposta do PowerShell muito grande.'));});
+    child.on('error',()=>finish(new Error('Não foi possível abrir o PowerShell.')));
+    child.on('close',code=>{if(code!==0)return finish(new Error('O PowerShell não concluiu a consulta.'));try{finish(null,JSON.parse(out));}catch{finish(new Error('Resposta do PowerShell inválida.'));}});
+    child.stdin.on('error',()=>{});child.stdin.end(script+'\n');
+  });
+}
 async function antigravityQuota(){
   const command="$identity = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name; $out = @(); Get-CimInstance Win32_Process -Filter \"Name LIKE 'language_server%'\" | ForEach-Object { $proc = $_; $owner = Invoke-CimMethod -InputObject $proc -MethodName GetOwner -ErrorAction SilentlyContinue; if (($owner.Domain + '\\' + $owner.User) -eq $identity -and $proc.CommandLine -match 'antigravity') { $ports = @(Get-NetTCPConnection -OwningProcess $proc.ProcessId -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty LocalPort -Unique); $out += @{command=$proc.CommandLine;ports=$ports} } }; ConvertTo-Json -InputObject $out -Compress -Depth 5";
-  const servers=await new Promise((resolve,reject)=>execFile('powershell.exe',['-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(command,'utf16le').toString('base64')],{windowsHide:true,timeout:15000,maxBuffer:512*1024},(err,stdout)=>{if(err)reject(new Error('Não foi possível localizar Antigravity.'));else try{resolve(JSON.parse(stdout));}catch{reject(new Error('Antigravity não foi localizado.'));}}));
+  let servers;try{servers=await powershellJSON(command);}catch{fail('Não foi possível localizar Antigravity.');}
+  if(!Array.isArray(servers))fail('Antigravity não foi localizado.');
   const https=require('node:https');
   for(const server of servers){const token=server.command.match(/--csrf_token(?:=|\s+)["']?([^\s"']+)/)?.[1];if(!token)continue;for(const port of server.ports||[]){if(!Number.isInteger(port)||port<1||port>65535)continue;
     try{return await new Promise((resolve,reject)=>{const req=https.request({hostname:'127.0.0.1',port,path:'/exa.language_server_pb.LanguageServerService/RetrieveUserQuotaSummary',method:'POST',rejectUnauthorized:false,timeout:3000,headers:{'Content-Type':'application/json','x-codeium-csrf-token':token}},res=>{let text='';res.on('data',b=>{text+=b;if(text.length>1024*1024)req.destroy();});res.on('end',()=>{if(res.statusCode!==200)return reject(new Error('RPC indisponível.'));try{const data=JSON.parse(text);if(!data.response?.groups?.length)return reject(new Error('Sem cota neste processo.'));resolve(data);}catch{reject(new Error('RPC inválido.'));}});});req.on('error',reject);req.on('timeout',()=>req.destroy(new Error('Tempo excedido.')));req.end('{}');});}catch{}
@@ -168,4 +182,4 @@ async function fetchSpecial(account,credential,request){
   }
   fail('Conector indisponível.');
 }
-module.exports={specialIds,fetchSpecial,decodePlanStatus,protobufFields,volcHeaders,objects};
+module.exports={specialIds,fetchSpecial,decodePlanStatus,protobufFields,volcHeaders,objects,powershellJSON};
