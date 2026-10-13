@@ -1,18 +1,18 @@
 # Pendências do Neo
 
-Lista do que falta, em ordem de prioridade. Atualize-a quando um item for concluído ou quando surgir outro. Estado em 13/10/2026: a **0.3.3** está publicada ([release](https://github.com/llypeDev/NEO/releases/tag/v0.3.3), tag `v0.3.3` → `129fd67`, run 38396620228 do workflow Publicação). O processo para lançar uma versão está no `CLAUDE.md`.
+Lista do que falta, em ordem de prioridade. Atualize-a quando um item for concluído ou quando surgir outro. Estado em 13/10/2026: a **0.3.4** está publicada ([release](https://github.com/llypeDev/NEO/releases/tag/v0.3.4), tag `v0.3.4` → `680131e`, run 38405847753 do workflow Publicação). O processo para lançar uma versão está no `CLAUDE.md`.
 
-## 1. Validar a 0.3.3 no Windows da empresa (SentinelOne)
+## 1. Validar a versão publicada no Windows da empresa (SentinelOne)
 
-O SentinelOne bloqueou o portátil 0.3.2. A 0.3.3 traz mudanças para reduzir esses gatilhos, mas nada foi testado ainda numa máquina com o SentinelOne. Teste e anote, para cada formato, se o antivírus bloqueia, alerta ou deixa passar:
+O SentinelOne bloqueou o portátil 0.3.2 e a 0.3.3 baixada. Com a versão publicada mais recente (hoje a 0.3.4), teste e anote, para cada formato, se o antivírus bloqueia, alerta ou deixa passar:
 
-1. **ZIP:** descompacte o `Neo-0.3.3-x64.zip` numa pasta permanente e abra o `Neo.exe`. Esse formato não se extrai para `%TEMP%` e é o que tem mais chance de passar.
-2. **Portátil:** ele se extrai para `%TEMP%\Neo-0.3.3`.
-3. **Instalador:** o `Neo-0.3.3-x64-nsis.exe` instala por usuário, sem pedir administrador. Toda instalação chama `powershell.exe`, mesmo com o Neo fechado (ver 2.3).
-4. **Atualização com a 0.3.2 aberta:** a 0.3.3 deve mostrar o aviso "Uma versão anterior do Neo continua aberta". Depois de **Sair** na bandeja e **Tentar de novo**, a 0.3.3 assume. O aviso tem uma janela-dona sempre no topo, mas esse comportamento só foi validado no Linux (Xvfb); confirme que no Windows ele não fica atrás da janela da 0.3.2.
-5. **Atualização com a 0.3.3 aberta:** quando sair uma 0.3.4, abri-la deve fechar a 0.3.3 sem aviso.
+1. **ZIP:** descompacte o `Neo-0.3.4-x64.zip` numa pasta permanente e abra o `Neo.exe`. Esse formato não se extrai para `%TEMP%` e é o que tem mais chance de passar.
+2. **Portátil:** ele se extrai para `%TEMP%\Neo-0.3.4`.
+3. **Instalador:** o `Neo-0.3.4-x64-nsis.exe` instala por usuário, sem pedir administrador. Toda instalação chama `powershell.exe`, mesmo com o Neo fechado (ver 2.3).
+4. **Atualização com a 0.3.2 aberta:** a versão nova deve mostrar o aviso "Uma versão anterior do Neo continua aberta". Depois de **Sair** na bandeja e **Tentar de novo**, a versão nova assume. O aviso tem uma janela-dona sempre no topo, mas esse comportamento só foi validado no Linux (Xvfb); confirme que no Windows ele não fica atrás da janela da 0.3.2.
+5. **Atualização com a 0.3.3 aberta:** abrir a 0.3.4 deve fechar a 0.3.3 sem aviso, e a 0.3.4 assume a bandeja. Pode ser testado agora, com a 0.3.4 baixada ou gerada localmente.
 
-**Resultado em 13/10/2026:** a 0.3.3 baixada das Releases foi bloqueada; o formato e o detalhe do alerta não foram registrados. A mesma 0.3.3 gerada no computador da empresa (`npm ci` e `npm run build`) abriu sem bloqueio. A 0.3.1, que nunca foi bloqueada, também tinha sido gerada localmente e enviada à mão; a 0.3.2 e a 0.3.3 vieram do GitHub Actions. Isso aponta para arquivo baixado sem assinatura e sem reputação (2.2), e não para o código. O README ganhou a seção "Gerar no próprio computador" como alternativa. Ainda falta saber se o ZIP baixado passa.
+**Resultado em 13/10/2026:** a 0.3.3 baixada das Releases foi bloqueada; o formato e o detalhe do alerta não foram registrados. A mesma 0.3.3 gerada no computador da empresa (`npm ci` e `npm run build`) abriu sem bloqueio. A 0.3.1, que nunca foi bloqueada, também tinha sido gerada localmente e enviada à mão; a 0.3.2 e a 0.3.3 vieram do GitHub Actions. Isso aponta para arquivo baixado sem assinatura e sem reputação (2.2), e não para o código. O README ganhou a seção "Gerar no próprio computador" como alternativa (0.3.4). Ainda falta saber se o ZIP baixado passa e registrar o detalhe do alerta (2.1).
 
 **Pronto quando:** você souber quais formatos o SentinelOne aceita e a troca de versão tiver funcionado no Windows. Registre o resultado aqui e use-o no item 2.6.
 
@@ -88,7 +88,7 @@ O electron-builder 26 usa por padrão o NSIS 3.0.4.1, de 2019, que já gerou fal
 
 ### 2.6 Orientação para empresas
 
-Com o resultado do item 1, adicione ao README (tabela "Solução de problemas") e a `.github/release-notes.md` uma orientação curta:
+A 0.3.4 já traz no README a linha "O antivírus da empresa bloqueia o Neo baixado" em "Solução de problemas", que aponta para "Gerar no próprio computador". Com o resultado do item 1, complete essa orientação no README e leve uma versão curta a `.github/release-notes.md`:
 - prefira o ZIP; o instalador, só se o teste mostrar que o SentinelOne o aceita;
 - confira o hash;
 - peça à TI os detalhes do item 2.1.
@@ -113,7 +113,7 @@ O item 1 apareceu no CI; os demais são recomendações da análise inicial, ain
 ## 4. Funcionalidades
 
 Da lista "Estado atual" do README:
-- login OAuth próprio e renovação de tokens;
+- login OAuth próprio e renovação de tokens. Para o Claude Code, o login local só é renovado quando a CLI faz uma consulta; quem usa o app Claude para desktop vê o login vencer em poucas horas (validado em 13/10/2026 com uma conta Team). Hoje o aviso pede `claude -p "ok"`. Renovar pelo Neo troca o login salvo e pode deslogar o Claude Code, então decida com o usuário antes;
 - importação de Cookies dos navegadores;
 - leitores de histórico além de Codex e Claude Code;
 - preços de modelos e histórico das páginas de status;
