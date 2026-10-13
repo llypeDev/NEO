@@ -28,8 +28,8 @@ async function localCredential(provider, env = process.env, home = os.homedir())
   }
   if (provider === 'claude') {
     const root = await readJSON(path.join(env.CLAUDE_CONFIG_DIR || path.join(home, '.claude'), '.credentials.json'));
-    if (!root.claudeAiOauth?.accessToken) throw error('auth', 'Entre no Claude Code para disponibilizar o login local.');
-    if (root.claudeAiOauth.expiresAt && root.claudeAiOauth.expiresAt < Date.now()) throw error('auth', 'Abra o Claude Code para renovar o login.');
+    if (!root.claudeAiOauth?.accessToken) throw error('auth', 'Entre no Claude Code pelo terminal (claude e depois /login) para disponibilizar o login local.');
+    if (root.claudeAiOauth.expiresAt && root.claudeAiOauth.expiresAt < Date.now()) throw error('auth', 'O login do Claude Code expirou. Rode claude -p "ok" no terminal e clique em Atualizar; o app Claude para desktop não renova esse login.');
     return {token: root.claudeAiOauth.accessToken};
   }
   if (provider === 'cursor' || provider === 'grokBot') {

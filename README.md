@@ -203,6 +203,7 @@ Para instalar a 0.3.2 ou uma versão anterior, encerre antes o Neo pelo menu da 
 | **Aparece uma leitura antiga** | Atualize a conta. Para um JSON local, atualize também o arquivo; ele recebe a data de sua última modificação e fica antigo após dez minutos. |
 | **Abre uma versão antiga** | Confira em **Sobre** a versão aberta. Se aparecer o aviso de versão anterior, clique em **Sair** no ícone do Neo na bandeja e depois em **Tentar de novo**. Sem aviso, clique em **Sair** na bandeja e abra o executável novo. |
 | **O antivírus da empresa bloqueia o Neo baixado** | Tente o ZIP do aplicativo. Se ele também for bloqueado, siga [Gerar no próprio computador](#gerar-no-próprio-computador) ou peça à TI a liberação pelo hash do `SHA256SUMS.txt`. |
+| **Claude Code: "O login do Claude Code expirou"** | O Neo lê o login do Claude Code do terminal, que expira em poucas horas; o app Claude para desktop não o renova. Rode `claude -p "ok"` no PowerShell e clique em **Atualizar**. |
 | **O atalho não funciona** | Escolha outra combinação em **Geral**; outro aplicativo pode estar usando o mesmo atalho. |
 | **A credencial deixou de funcionar em outro PC** | Cadastre-a novamente. O arquivo protegido não é uma credencial portátil entre usuários ou computadores. |
 
