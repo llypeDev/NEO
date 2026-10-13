@@ -1,5 +1,9 @@
 # Histórico de versões
 
+## Não publicado
+
+- README com a seção "Gerar no próprio computador", para quando o antivírus da empresa bloqueia os arquivos baixados das Releases, e uma linha correspondente em "Solução de problemas".
+
 ## 0.3.3 — 2026-10-09
 
 - Nova opção `Neo-x.y.z-x64.zip`, o aplicativo sem instalador e sem autoextração, para quando o antivírus da empresa bloqueia o portátil. O portátil passa a se extrair sempre para `%TEMP%\Neo-<versão>`, um caminho previsível que a TI pode liberar.
