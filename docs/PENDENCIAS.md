@@ -93,15 +93,20 @@ Com o resultado do item 1, adicione ao README (tabela "Solução de problemas") 
 
 ## 3. Melhorias de código
 
-Recomendações da análise inicial, ainda abertas:
+O item 1 apareceu no CI; os demais são recomendações da análise inicial, ainda abertas:
 
-1. **Separar o smoke test:** o smoke test (cerca de 90 linhas) vive dentro de `src/main.cjs`; mova-o para um módulo próprio.
-2. **Atualização testável:** extraia a orquestração de `refresh()` para um módulo com dependências injetadas, como foi feito com `src/instances.cjs`.
-3. **Duplicação do `--json`:** `src/cli.cjs` e o modo `--json` de `src/main.cjs` repetem a exportação.
-4. **HTTP 429:** depois de um 429, espere mais antes de consultar a mesma conta de novo, em vez de repetir no intervalo normal.
-5. **Novas versões:** verificação opcional de nova versão pela API de releases do GitHub, desligada por padrão.
-6. **Código compactado:** há linhas de milhares de caracteres; reorganize aos poucos, só no que for alterado, sem reformatar tudo de uma vez.
-7. **Texto da tela Sobre:** "Consulte a análise que acompanha o aplicativo" aponta para algo que não existe (`about()` em `src/ui/app.js`).
+1. **Teste do PowerShell instável:** o teste "o PowerShell do Windows executa o script recebido pela entrada padrão" (`test/powershell.test.cjs`) abre o `powershell.exe` de verdade com o prazo de produção de `powershellJSON`, 15 s.
+   - Na `main`, ele levou 3,8 s (run 37999989243). No PR #6, que só alterou documentação, passou de 15 s e derrubou o job "Testes e sintaxe no Windows" (run 38398615910).
+   - O workflow Publicação também roda os testes, então uma tag pode falhar pelo mesmo motivo.
+   - O teste confere a entrada padrão, não a velocidade: passe um prazo maior só no teste, por exemplo `powershellJSON("…",{timeout:60000})`.
+   - Avalie também se 15 s bastam para o Antigravity em máquinas com antivírus corporativo, onde o PowerShell pode demorar mais para abrir.
+2. **Separar o smoke test:** o smoke test (cerca de 90 linhas) vive dentro de `src/main.cjs`; mova-o para um módulo próprio.
+3. **Atualização testável:** extraia a orquestração de `refresh()` para um módulo com dependências injetadas, como foi feito com `src/instances.cjs`.
+4. **Duplicação do `--json`:** `src/cli.cjs` e o modo `--json` de `src/main.cjs` repetem a exportação.
+5. **HTTP 429:** depois de um 429, espere mais antes de consultar a mesma conta de novo, em vez de repetir no intervalo normal.
+6. **Novas versões:** verificação opcional de nova versão pela API de releases do GitHub, desligada por padrão.
+7. **Código compactado:** há linhas de milhares de caracteres; reorganize aos poucos, só no que for alterado, sem reformatar tudo de uma vez.
+8. **Texto da tela Sobre:** "Consulte a análise que acompanha o aplicativo" aponta para algo que não existe (`about()` em `src/ui/app.js`).
 
 ## 4. Funcionalidades
 
