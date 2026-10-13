@@ -26,7 +26,9 @@ O Neo não renova o login. Quando o token expirar, autentique novamente o client
 
 Autentique o cliente Claude Code e habilite o login local. A leitura usa `.credentials.json` em `CLAUDE_CONFIG_DIR`, quando definido, ou em `%USERPROFILE%\.claude`.
 
-Para outra conta, insira o token OAuth aceito pelo serviço. Quando houver expiração, abra o Claude Code e renove o login nele. O Neo não realiza essa renovação por conta própria.
+Para outra conta, insira o token OAuth aceito pelo serviço.
+
+O login local expira em poucas horas e só é renovado quando o Claude Code do terminal faz uma consulta. O app Claude para desktop guarda um login separado e não atualiza esse arquivo. Quando o Neo avisar que o login expirou, rode `claude -p "ok"` no PowerShell e clique em **Atualizar**. O Neo não realiza essa renovação por conta própria.
 
 ## Cursor e Grok Bot
 

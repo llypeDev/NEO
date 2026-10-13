@@ -12,6 +12,8 @@ O SentinelOne bloqueou o portátil 0.3.2. A 0.3.3 traz mudanças para reduzir es
 4. **Atualização com a 0.3.2 aberta:** a 0.3.3 deve mostrar o aviso "Uma versão anterior do Neo continua aberta". Depois de **Sair** na bandeja e **Tentar de novo**, a 0.3.3 assume. O aviso tem uma janela-dona sempre no topo, mas esse comportamento só foi validado no Linux (Xvfb); confirme que no Windows ele não fica atrás da janela da 0.3.2.
 5. **Atualização com a 0.3.3 aberta:** quando sair uma 0.3.4, abri-la deve fechar a 0.3.3 sem aviso.
 
+**Resultado em 13/10/2026:** a 0.3.3 baixada das Releases foi bloqueada; o formato e o detalhe do alerta não foram registrados. A mesma 0.3.3 gerada no computador da empresa (`npm ci` e `npm run build`) abriu sem bloqueio. A 0.3.1, que nunca foi bloqueada, também tinha sido gerada localmente e enviada à mão; a 0.3.2 e a 0.3.3 vieram do GitHub Actions. Isso aponta para arquivo baixado sem assinatura e sem reputação (2.2), e não para o código. O README ganhou a seção "Gerar no próprio computador" como alternativa. Ainda falta saber se o ZIP baixado passa.
+
 **Pronto quando:** você souber quais formatos o SentinelOne aceita e a troca de versão tiver funcionado no Windows. Registre o resultado aqui e use-o no item 2.6.
 
 ## 2. Antivírus corporativo

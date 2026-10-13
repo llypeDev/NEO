@@ -81,6 +81,31 @@ Get-ChildItem Neo-*.exe, Neo-*.zip
 
 Um `False` sem mensagem de erro indica um arquivo diferente do publicado: apague-o e baixe de novo pela página de Releases. Se antes do `False` aparecer "Não é possível localizar o caminho", o arquivo não foi encontrado com esse nome nessa pasta, e o resultado não diz nada sobre a integridade.
 
+### Gerar no próprio computador
+
+Se o antivírus da empresa bloquear os arquivos baixados das Releases, gere o Neo no seu computador a partir do código. Os executáveis publicados não têm assinatura digital e chegam marcados como vindos da internet, o que pesa na avaliação do antivírus. Num computador com SentinelOne que bloqueou a 0.3.3 baixada, a mesma versão gerada localmente abriu sem bloqueio.
+
+Você precisa de **Node.js 24+**. Os passos não pedem administrador nem alteram o antivírus:
+
+1. Baixe o `Neo-0.3.3-codigo.zip` em **Assets** e descompacte-o, ou use o ZIP do botão **Code**.
+2. Abra o PowerShell na pasta descompactada, a que tem o `package.json`, e rode:
+   ```powershell
+   npm.cmd ci
+   npm.cmd run pack
+   ```
+3. Copie a pasta `release\win-unpacked` para um lugar permanente, como `$env:LOCALAPPDATA\Neo`, e abra o `Neo.exe` de lá.
+
+O `npm.cmd ci` mostra avisos de pacotes antigos e de vulnerabilidades nas ferramentas de build. Eles não impedem a geração; não rode `npm audit fix --force`, que troca versões fixadas.
+
+Para ter instalador, portátil e ZIP, use `npm.cmd run build` no lugar de `npm.cmd run pack`. O portátil gerado assim extrai para uma pasta temporária nova a cada abertura; para usar `%TEMP%\Neo-<versão>`, como nas Releases, rode:
+
+```powershell
+$version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+npm.cmd run build -- "-c.portable.unpackDirName=Neo-$version"
+```
+
+Para atualizar, repita os passos com o código da versão nova e substitua a pasta. As contas continuam no perfil `%APPDATA%\Pulse Windows`. Se a empresa tiver regras para programas gerados localmente, avise a TI antes.
+
 ## Primeiros passos
 
 1. Na lista lateral, procure o nome do serviço ou abra **Adicionar provedor**.
@@ -177,6 +202,8 @@ Para instalar a 0.3.2 ou uma versão anterior, encerre antes o Neo pelo menu da 
 | **Não há percentual, só saldo** | Alguns serviços informam saldo em dinheiro ou créditos sem uma cota percentual. |
 | **Aparece uma leitura antiga** | Atualize a conta. Para um JSON local, atualize também o arquivo; ele recebe a data de sua última modificação e fica antigo após dez minutos. |
 | **Abre uma versão antiga** | Confira em **Sobre** a versão aberta. Se aparecer o aviso de versão anterior, clique em **Sair** no ícone do Neo na bandeja e depois em **Tentar de novo**. Sem aviso, clique em **Sair** na bandeja e abra o executável novo. |
+| **O antivírus da empresa bloqueia o Neo baixado** | Tente o ZIP do aplicativo. Se ele também for bloqueado, siga [Gerar no próprio computador](#gerar-no-próprio-computador) ou peça à TI a liberação pelo hash do `SHA256SUMS.txt`. |
+| **Claude Code: "O login do Claude Code expirou"** | O Neo lê o login do Claude Code do terminal, que expira em poucas horas; o app Claude para desktop não o renova. Rode `claude -p "ok"` no PowerShell e clique em **Atualizar**. |
 | **O atalho não funciona** | Escolha outra combinação em **Geral**; outro aplicativo pode estar usando o mesmo atalho. |
 | **A credencial deixou de funcionar em outro PC** | Cadastre-a novamente. O arquivo protegido não é uma credencial portátil entre usuários ou computadores. |
 
