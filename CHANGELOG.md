@@ -1,6 +1,6 @@
 # Histórico de versões
 
-## Não publicado
+## 0.3.4 — 2026-10-13
 
 - Avisos do Claude Code explicam que o login local é o do terminal e que `claude -p "ok"` o renova; o app Claude para desktop não atualiza esse login. O guia de configuração e a solução de problemas trazem o mesmo passo.
 - README com a seção "Gerar no próprio computador", para quando o antivírus da empresa bloqueia os arquivos baixados das Releases, e uma linha correspondente em "Solução de problemas".
