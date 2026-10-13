@@ -1,48 +1,18 @@
 # Pendências do Neo
 
-Lista do que falta, em ordem de prioridade. Atualize-a quando um item for concluído ou quando surgir outro. Estado em 13/10/2026: a `main` está na **0.3.3**, mas a release 0.3.3 ainda não foi publicada.
+Lista do que falta, em ordem de prioridade. Atualize-a quando um item for concluído ou quando surgir outro. Estado em 13/10/2026: a **0.3.3** está publicada ([release](https://github.com/llypeDev/NEO/releases/tag/v0.3.3), tag `v0.3.3` → `129fd67`, run 38396620228 do workflow Publicação). O processo para lançar uma versão está no `CLAUDE.md`.
 
-## 1. Publicar a 0.3.3
+## 1. Validar a 0.3.3 no Windows da empresa (SentinelOne)
 
-### 1.1 Enviar a tag `v0.3.3`
+O SentinelOne bloqueou o portátil 0.3.2. A 0.3.3 traz mudanças para reduzir esses gatilhos, mas nada foi testado ainda numa máquina com o SentinelOne. Teste e anote, para cada formato, se o antivírus bloqueia, alerta ou deixa passar:
 
-A tag precisa apontar para o commit `129fd67` (merge do PR #5), em que o `package.json` já está em 0.3.3. As sessões do Claude Code na nuvem recebem **HTTP 403** ao enviar tags, então a tag é enviada de um clone local:
+1. **ZIP:** descompacte o `Neo-0.3.3-x64.zip` numa pasta permanente e abra o `Neo.exe`. Esse formato não se extrai para `%TEMP%` e é o que tem mais chance de passar.
+2. **Portátil:** ele se extrai para `%TEMP%\Neo-0.3.3`.
+3. **Instalador:** o `Neo-0.3.3-x64-nsis.exe` instala por usuário, sem pedir administrador. Toda instalação chama `powershell.exe`, mesmo com o Neo fechado (ver 2.3).
+4. **Atualização com a 0.3.2 aberta:** a 0.3.3 deve mostrar o aviso "Uma versão anterior do Neo continua aberta". Depois de **Sair** na bandeja e **Tentar de novo**, a 0.3.3 assume. O aviso tem uma janela-dona sempre no topo, mas esse comportamento só foi validado no Linux (Xvfb); confirme que no Windows ele não fica atrás da janela da 0.3.2.
+5. **Atualização com a 0.3.3 aberta:** quando sair uma 0.3.4, abri-la deve fechar a 0.3.3 sem aviso.
 
-```powershell
-cd $env:TEMP
-git clone https://github.com/llypeDev/NEO.git neo-tag
-cd neo-tag
-git tag -a v0.3.3 129fd67 -m "Neo 0.3.3"
-git push origin v0.3.3
-cd ..
-Remove-Item -Recurse -Force neo-tag
-```
-
-**Pronto quando:** o push mostra `* [new tag] v0.3.3 -> v0.3.3`.
-
-### 1.2 Conferir e publicar o rascunho
-
-A tag dispara o workflow **Publicação** (`.github/workflows/release.yml`, job "Pacotes Windows"), que leva cerca de 2 minutos. Ele confere se a tag bate com o `package.json`, roda os testes, gera os pacotes e cria um **rascunho** de release com as notas de `.github/release-notes.md`.
-
-1. Abra o rascunho em [Releases](https://github.com/llypeDev/NEO/releases). Ele deve ter 5 arquivos:
-   - `Neo-0.3.3-x64-nsis.exe`
-   - `Neo-0.3.3-x64-portable.exe`
-   - `Neo-0.3.3-x64.zip`
-   - `Neo-0.3.3-codigo.zip`
-   - `SHA256SUMS.txt`
-2. Confira as notas: as mudanças da seção 0.3.3 do CHANGELOG, a lista de downloads e três linhas de conferência com os hashes preenchidos.
-3. Clique em **Publish release**.
-
-**Pronto quando:** a 0.3.3 é a release "latest" e os links de download do README respondem.
-
-### 1.3 Testar no computador da empresa (SentinelOne)
-
-1. **ZIP:** descompacte o `Neo-0.3.3-x64.zip` numa pasta permanente e abra o `Neo.exe`. Esse formato não se extrai para `%TEMP%`.
-2. **Portátil:** ele se extrai para `%TEMP%\Neo-0.3.3`. Anote se o SentinelOne bloqueia.
-3. **Atualização com a 0.3.2 aberta:** a 0.3.3 deve mostrar o aviso "Uma versão anterior do Neo continua aberta". Depois de **Sair** na bandeja e **Tentar de novo**, a 0.3.3 assume. O aviso tem uma janela-dona sempre no topo, mas esse comportamento só foi validado no Linux (Xvfb); confirme no Windows que ele não fica atrás da janela da 0.3.2.
-4. **Atualização com a 0.3.3 aberta:** quando sair uma 0.3.4, abri-la deve fechar a 0.3.3 sem aviso.
-
-**Pronto quando:** você souber qual formato o SentinelOne aceita e a troca de versão tiver funcionado no Windows.
+**Pronto quando:** você souber quais formatos o SentinelOne aceita e a troca de versão tiver funcionado no Windows. Registre o resultado aqui e use-o no item 2.6.
 
 ## 2. Antivírus corporativo
 
@@ -76,24 +46,39 @@ Também vale consultar o hash no VirusTotal (linha "SentinelOne (Static ML)").
   - Exige uma política de assinatura publicada, MFA de todos os mantenedores no GitHub e na SignPath, e uma política de privacidade que cubra o tráfego aos provedores.
   - A integração usa `signpath/github-action-submit-signing-request`.
   - Para assinar também o `Neo.exe` interno, o pipeline tem duas etapas: `electron-builder --dir`, assinatura do `win-unpacked` e depois `electron-builder --prepackaged`. Em seguida, os `.exe` finais são assinados.
+  - No `release.yml`, os passos "Empacotar código e somas SHA-256", "Preparar as notas da versão" e "Guardar os pacotes" passam para depois da assinatura.
 - **Certificado OV pago na nuvem** (SSL.com eSigner, Certum Open Source e similares):
   - Mostra o seu nome.
   - Configure com `win.signtoolOptions.sign` (hook) no `package.json`, removendo `"signExecutable": false`.
+  - A assinatura acontece dentro do passo "Gerar instalador, portátil e ZIP", antes das somas e das notas, então a ordem do `release.yml` não muda.
   - A validade é de no máximo 460 dias.
 - **Azure Artifact Signing:** não atende pessoa física no Brasil (só EUA e Canadá).
 
 Em qualquer opção:
-- mova o cálculo do `SHA256SUMS.txt` e o passo "Preparar as notas da versão" do `release.yml` para depois da assinatura;
-- adicione uma etapa que falhe se `Get-AuthenticodeSignature` não for `Valid`;
+- adicione ao `release.yml` uma etapa que falhe se `Get-AuthenticodeSignature` não for `Valid` em algum `.exe` publicado;
 - sempre use carimbo de tempo.
 
 ### 2.3 Instalador NSIS sem PowerShell
 
-O `CHECK_APP_RUNNING` do electron-builder 26 roda `powershell.exe` com `Get-CimInstance Win32_Process` e `Stop-Process` quando o Neo está aberto durante a instalação. Defina a macro `customCheckAppRunning` num script de inclusão NSIS (`build.nsis.include`). Ela pode pedir para fechar o Neo, ou abrir o `Neo.exe` novo para que a entrega de versão da 0.3.3 feche o antigo.
+O `CHECK_APP_RUNNING` do electron-builder 26 (`node_modules/app-builder-lib/templates/nsis/include/allowOnlyOneInstallerInstance.nsh`) roda `powershell.exe` em **toda** instalação e desinstalação:
+- duas vezes para checar se o PowerShell está disponível;
+- uma com `Get-CimInstance Win32_Process` para procurar o Neo;
+- e ainda `Stop-Process`, se o Neo estiver aberto.
+
+Defina a macro `customCheckAppRunning` num script de inclusão (`build.nsis.include`). Ela deve:
+- detectar o Neo sem PowerShell, por exemplo com `nsProcess::FindProcess "Neo.exe"`, que o modelo do electron-builder já inclui;
+- pedir que a pessoa o feche pela bandeja (**Sair**), com uma `MessageBox` de Tentar de novo/Cancelar;
+- valer também para o desinstalador.
+
+A entrega de versão da 0.3.3 não ajuda aqui: esse passo roda antes de os arquivos novos serem instalados, então o `Neo.exe` na pasta ainda é o antigo.
+
+A atualização executa em modo silencioso (`/S`) o desinstalador da versão já instalada, gerado com o modelo antigo. Por isso, a macro só elimina todo o PowerShell das atualizações a partir da segunda versão que a tiver.
 
 ### 2.4 Início com o Windows
 
-`configureStartup()` (`src/main.cjs`) chama `app.setLoginItemSettings` em toda abertura, o que grava a chave `HKCU\...\Run`. Passe a gravar só quando o valor atual, lido com `app.getLoginItemSettings`, for diferente do desejado.
+`configureStartup()` (`src/main.cjs`) chama `app.setLoginItemSettings` em toda abertura e a cada vez que as configurações são salvas (handler `settings-save`), o que grava a chave `HKCU\...\Run`.
+
+Leia o estado atual com `app.getLoginItemSettings({path, args})`, usando o mesmo `path` (`process.env.PORTABLE_EXECUTABLE_FILE || process.execPath`) e os mesmos `args` (`app.isPackaged ? [] : [app.getAppPath()]`) usados na gravação. Só chame `setLoginItemSettings` quando `openAtLogin` for diferente de `settings.startAtLogin`. Sem `path`/`args`, o Electron compara com `process.execPath`, que no portátil é a pasta temporária, e a gravação aconteceria toda vez.
 
 ### 2.5 Toolset NSIS novo
 
@@ -101,8 +86,8 @@ O electron-builder 26 usa por padrão o NSIS 3.0.4.1, de 2019, que já gerou fal
 
 ### 2.6 Orientação para empresas
 
-Adicione ao README (tabela "Solução de problemas") e a `.github/release-notes.md` uma orientação curta:
-- prefira o ZIP ou o instalador;
+Com o resultado do item 1, adicione ao README (tabela "Solução de problemas") e a `.github/release-notes.md` uma orientação curta:
+- prefira o ZIP; o instalador, só se o teste mostrar que o SentinelOne o aceita;
 - confira o hash;
 - peça à TI os detalhes do item 2.1.
 
@@ -130,5 +115,7 @@ Da lista "Estado atual" do README:
 
 ## 5. Opcionais
 
-- Colar na release 0.3.2 as notas no formato novo (download, hashes, atualização).
-- O Dependabot (`.github/dependabot.yml`) ainda não abriu PRs. Quando abrir, os PRs do Electron passam pelo CI completo, incluindo pacotes e interface.
+- **Notas da release 0.3.2 no formato novo.** Parta do modelo anterior à 0.3.3 (`git show 66e0f20:.github/release-notes.md`), e não do atual: a 0.3.2 não tem o ZIP do aplicativo nem a entrega entre versões.
+  - Preencha a versão, a seção 0.3.2 do CHANGELOG e os hashes do portátil e do NSIS do `SHA256SUMS.txt` da release.
+  - A edição é manual, porque as sessões do Claude não editam releases.
+- **Dependabot:** o `.github/dependabot.yml` ainda não abriu PRs. Quando abrir, os PRs do Electron passam pelo CI completo, incluindo pacotes e interface.
