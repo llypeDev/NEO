@@ -17,8 +17,8 @@
     "json": "node src/cli.cjs --json"
   },
   "devDependencies": {
-    "electron": "44.7.0",
-    "electron-builder": "26.15.3"
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0"
   },
   "build": {
     "appId": "io.pulse.windows",
